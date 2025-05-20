@@ -1,0 +1,40 @@
+body {
+    background: rgba(0,0,0,0.8) url('../images/hero-bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.overlay {
+    background-color: rgba(0,0,0,0.7);
+    padding: 40px;
+    border-radius: 15px;
+    margin: 100px auto;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.overlay h2 {
+    margin-bottom: 20px;
+}
+
+.overlay a {
+    display: block;
+    margin: 15px 0;
+    font-size: 18px;
+    color: #fff;
+    text-decoration: none;
+    border: 1px solid #fff;
+    padding: 10px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.overlay a:hover {
+    background-color: #fff;
+    color: #000;
+}

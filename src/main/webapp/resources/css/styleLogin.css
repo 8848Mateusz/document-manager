@@ -135,3 +135,14 @@ button:hover {
   margin-top: 30px;
   color: #fff;
 }
+
+.error-msg {
+  color: #ff5c5c;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  padding-left: 2px;
+}
+
+.input-field input.invalid {
+  border-bottom: 2px solid #ff5c5c;
+}

@@ -49,19 +49,7 @@ h2 {
 
 .input-field {
   position: relative;
-  border-bottom: 2px solid #ccc;
-  margin: 15px 0;
-}
-
-.input-field label {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  color: #fff;
-  font-size: 16px;
-  pointer-events: none;
-  transition: 0.15s ease;
+  margin: 20px 0;
 }
 
 .input-field input {
@@ -69,16 +57,44 @@ h2 {
   height: 40px;
   background: transparent;
   border: none;
-  outline: none;
-  font-size: 16px;
+  border-bottom: 2px solid #ccc;
   color: #fff;
+  font-size: 16px;
+  outline: none;
 }
 
-.input-field input:focus~label,
-.input-field input:valid~label {
-  font-size: 0.8rem;
-  top: 10px;
-  transform: translateY(-120%);
+.input-field label {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+  font-size: 16px;
+  pointer-events: none;
+  transition: 0.2s ease;
+}
+
+.input-field input:focus ~ label,
+.input-field input:valid ~ label,
+.input-field input:not(:placeholder-shown) ~ label {
+  font-size: 12px;
+  top: 0;
+  transform: translateY(-100%);
+}
+
+.input-field input:invalid:not(:focus):not(:placeholder-shown) {
+  border-bottom: 2px solid rgba(255, 77, 79, 0.7);
+}
+
+.error-message {
+  font-size: 12px;
+  color: #ff4d4f;
+  margin-top: 5px;
+  display: none;
+}
+
+.input-field input:invalid:not(:focus):not(:placeholder-shown) ~ .error-message {
+  display: block;
 }
 
 .forget {

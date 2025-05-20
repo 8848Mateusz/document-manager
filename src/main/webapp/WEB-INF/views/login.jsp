@@ -9,19 +9,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title></title>
-  <link rel="stylesheet" href="<c:url value='/resources/css/style.css'/>"/>
+  <link rel="stylesheet" href="<c:url value='/resources/css/styleLogin.css'/>"/>
 </head>
 <body>
 <div class="wrapper">
-  <form action="/index" method="post">
+  <form action="/login" method="post">
     <h2>Login</h2>
+    <c:if test="${param.error != null}">
+      <div class="error-msg" style="text-align: center;">Invalid e-mail or password.</div>
+    </c:if>
     <div class="input-field">
-      <input type="text" required>
+      <input type="text"  id="email" name="email" required>
       <label>Enter your email</label>
+      <div class="error-msg" id="email-error"></div>
     </div>
     <div class="input-field">
-      <input type="password" required>
+      <input type="password" id="password" name="password" required>
       <label>Enter your password</label>
+      <div class="error-msg" id="password-error"></div>
     </div>
     <div class="forget">
       <label></label>
@@ -33,5 +38,6 @@
     </div>
   </form>
 </div>
+<script src="<c:url value='/resources/js/scriptsLogin.js'/>"></script>
 </body>
 </html>
