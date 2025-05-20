@@ -8,12 +8,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Glassmorphism Login Form | CodingNepal</title>
+  <title></title>
   <link rel="stylesheet" href="<c:url value='/resources/css/style.css'/>"/>
 </head>
 <body>
 <div class="wrapper">
-  <form action="#">
+  <form action="/index" method="post">
     <h2>Login</h2>
     <div class="input-field">
       <input type="text" required>
@@ -24,15 +24,12 @@
       <label>Enter your password</label>
     </div>
     <div class="forget">
-      <label for="remember">
-        <input type="checkbox" id="remember">
-        <p>Remember me</p>
-      </label>
+      <label></label>
       <a href="#">Forgot password?</a>
     </div>
     <button type="submit">Log In</button>
     <div class="register">
-      <p>Don't have an account? <a href="#">Register</a></p>
+      <p>Don't have an account? <a href="<c:url value='/register'/>"><b>Register</b></a></p>
     </div>
   </form>
 </div>
