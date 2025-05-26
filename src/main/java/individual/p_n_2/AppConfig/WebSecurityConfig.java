@@ -26,6 +26,7 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
@@ -43,7 +44,7 @@ public class WebSecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-                        .requestMatchers("/login", "/register").permitAll()
+                        .requestMatchers("/login", "/register", "/forgotPassword", "/resetPassword", "/error").permitAll()
                         .requestMatchers("/resources/css/**", "/resources/js/**", "/resources/images/**").permitAll()
                         .requestMatchers("/dashboard").hasRole("USER")
                         .requestMatchers("/home").hasRole("USER")
@@ -55,6 +56,7 @@ public class WebSecurityConfig {
                         .usernameParameter("email")
                         .passwordParameter("password")
                         .defaultSuccessUrl("/home", true)
+                        .failureUrl("/login?error")
                         .permitAll()
                 )
 

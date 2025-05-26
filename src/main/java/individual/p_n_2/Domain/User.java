@@ -6,7 +6,10 @@ import org.springframework.lang.NonNull;
 import javax.validation.constraints.Email;
 
 @Entity
-@Table
+@Table(name = "user", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "email"),
+        @UniqueConstraint(columnNames = "full_name")
+})
 public class User {
 
     @Id

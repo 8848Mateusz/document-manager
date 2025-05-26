@@ -1,15 +1,15 @@
-
-
-window.addEventListener('DOMContentLoaded', event => {
-
-    // Toggle the side navigation
-    const sidebarToggle = document.body.querySelector('#sidebarToggle');
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', event => {
-            event.preventDefault();
-            document.body.classList.toggle('sb-sidenav-toggled');
-            localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
-        });
+function toggleUserMenu() {
+    const menu = document.getElementById("userMenu");
+    if (menu) {
+        menu.classList.toggle("show");
     }
+}
 
+window.addEventListener("click", function (e) {
+    if (!e.target.closest(".user-dropdown")) {
+        const menu = document.getElementById("userMenu");
+        if (menu) {
+            menu.classList.remove("show");
+        }
+    }
 });

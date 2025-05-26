@@ -13,24 +13,27 @@
 </head>
 <body>
 <div class="wrapper">
+  <c:if test="${loginError}">
+    <div class="alert-message">Nieprawidłowy e-mail lub hasło</div>
+  </c:if>
+  <c:if test="${logoutSuccess}">
+    <div class="alert-message">Zostałeś wylogowany</div>
+  </c:if>
   <form action="/login" method="post">
     <h2>Login</h2>
-    <c:if test="${param.error != null}">
-      <div class="error-msg" style="text-align: center;">Invalid e-mail or password.</div>
-    </c:if>
     <div class="input-field">
-      <input type="text"  id="email" name="email" required>
+      <input type="text"  id="email" name="email" autocomplete="off" required>
       <label>Enter your email</label>
       <div class="error-msg" id="email-error"></div>
     </div>
     <div class="input-field">
-      <input type="password" id="password" name="password" required>
+      <input type="password" id="password" name="password" autocomplete="off" required>
       <label>Enter your password</label>
       <div class="error-msg" id="password-error"></div>
     </div>
     <div class="forget">
       <label></label>
-      <a href="#">Forgot password?</a>
+      <a href="/forgotPassword">Forgot your password?</a>
     </div>
     <button type="submit">Log In</button>
     <div class="register">

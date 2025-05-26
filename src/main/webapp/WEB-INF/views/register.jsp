@@ -11,6 +11,9 @@
 </head>
 <body>
 <div class="wrapper">
+    <c:if test="${not empty errorMessage}">
+        <div class="alert-message">${errorMessage}</div>
+    </c:if>
         <form action="/register" method="post" role="form" >
         <h2>Create Account</h2>
         <div class="input-field">

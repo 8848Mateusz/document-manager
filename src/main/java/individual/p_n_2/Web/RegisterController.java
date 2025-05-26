@@ -21,8 +21,13 @@ public class RegisterController {
         return "register";
     }
     @PostMapping("/register")
-    public String processRegister(@ModelAttribute UserDto dto) {
-        userService.saveUser(dto);
-        return "redirect:/login?registered";
+    public String registerUser(@ModelAttribute("user") UserDto userDto, Model model) {
+        try {
+            userService.saveUser(userDto);
+            return "redirect:/login?registered";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "register";
+        }
     }
 }

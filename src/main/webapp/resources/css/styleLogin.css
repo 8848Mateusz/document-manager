@@ -136,13 +136,26 @@ button:hover {
   color: #fff;
 }
 
-.error-msg {
-  color: #ff5c5c;
-  font-size: 0.9rem;
-  margin-top: 4px;
-  padding-left: 2px;
+.alert-message {
+  color: #fff;
+  background-color: #dc3545;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+  animation: fadeInDown 0.4s ease-out;
 }
 
-.input-field input.invalid {
-  border-bottom: 2px solid #ff5c5c;
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

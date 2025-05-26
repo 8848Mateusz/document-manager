@@ -11,7 +11,7 @@
     <h2>Witaj, ${fullName}!</h2>
     <p>Wybierz, co chcesz zrobić:</p>
 
-    <a href="/dashboard">🧾 Nierozliczone faktury</a>
+    <a href="/dashboard">🧾 Przeterminowane płatności</a>
 
 </div>
 </body>
