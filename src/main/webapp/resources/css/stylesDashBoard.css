@@ -10855,10 +10855,12 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
   #sidebar-wrapper {
     margin-left: 0;
   }
+
   #page-content-wrapper {
     min-width: 0;
     width: 100%;
   }
+
   body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
     margin-left: -15rem;
   }
@@ -10975,7 +10977,7 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
   }
 
   .text-red {
-    color: #dc3545; /* Bootstrapowa czerwień */
+    color: #dc3545;
   }
 
   .dashboard-header {
@@ -11028,7 +11030,7 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
   }
 
   .user-menu li a {
-    color: #000; /* CZARNY TEKST */
+    color: #000;
     text-decoration: none;
     display: block;
   }
@@ -11053,4 +11055,290 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
       transform: translateY(0);
     }
   }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  ul li a {
+    color: #007bff;
+    text-decoration: underline;
+  }
+
+  .pdf-list {
+    list-style-type: none;
+    margin-top: 10px;
+    padding-left: 0;
+  }
+
+  .pdf-list li {
+    margin: 4px 0;
+  }
+
+  .pdf-list a {
+    color: #007bff;
+    text-decoration: underline;
+    font-weight: 500;
+  }
+
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .pagination a {
+    margin: 0 6px;
+    padding: 6px 12px;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #007bff;
+    transition: background-color 0.3s;
+  }
+
+  .pagination a:hover {
+    background-color: #f0f0f0;
+  }
+
+  .pagination a.active {
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+
+  .invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+  }
+
+  .invoice-table thead {
+    background-color: #f3f3f3;
+    text-align: left;
+  }
+
+  .invoice-table th, .invoice-table td {
+    padding: 10px 8px;
+    border: 1px solid #ddd;
+    vertical-align: middle;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .invoice-table th:nth-child(1),  /* checkbox */
+  .invoice-table td:nth-child(1) {
+    width: 40px;
+    text-align: center;
+  }
+
+  .invoice-table th:nth-child(2),  /* #ID */
+  .invoice-table td:nth-child(2) {
+    width: 45px;
+    text-align: center;
+  }
+
+  .invoice-table th:nth-child(3),  /* Kontrahent */
+  .invoice-table td:nth-child(3) {
+    width: 18%;
+    white-space: normal;
+  }
+
+  .invoice-table th:nth-child(4),  /* Numer faktury */
+  .invoice-table td:nth-child(4) {
+    width: 11%;
+  }
+
+  .invoice-table th:nth-child(5),  /* Termin płatności */
+  .invoice-table td:nth-child(5) {
+    width: 11%;
+  }
+
+  .invoice-table th:nth-child(6),  /* Kwota brutto */
+  .invoice-table td:nth-child(6) {
+    width: 9%;
+    text-align: right;
+  }
+
+  .invoice-table th:nth-child(7),  /* Kwota do zapłaty */
+  .invoice-table td:nth-child(7) {
+    width: 9%;
+    text-align: right;
+  }
+
+  .invoice-table th:nth-child(8),  /* Rozliczono */
+  .invoice-table td:nth-child(8) {
+    width: 6%;
+    text-align: center;
+  }
+
+  .invoice-table th:nth-child(9),  /* Ikona koperty */
+  .invoice-table td:nth-child(9) {
+    width: 5%;
+    text-align: center;
+  }
+
+  .invoice-table th:nth-child(10),  /* Ikona telefonu */
+  .invoice-table td:nth-child(10) {
+    width: 5%;
+    text-align: center;
+  }
+
+  .invoice-table th:nth-child(11),  /* Przycisk */
+  .invoice-table td:nth-child(11) {
+    width: 8%;
+    text-align: center;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    overflow-y: auto; /* scrolluj tylko modal */
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  .modal-overlay.visible {
+    display: flex; /* pokaż modal dopiero po kliknięciu */
+  }
+
+  .modal-overlay.show {
+    display: flex;
+  }
+
+  .modal-background {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(3px);
+  }
+
+  .modal-window {
+    background: #fff;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 550px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 25px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    position: relative;
+  }
+
+
+  .modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .modal-section {
+    margin: 20px 0;
+  }
+
+  .modal-section label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .modal-section textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+
+  .btn-primary {
+    padding: 6px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 5px;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+
+  .btn-round {
+    padding: 4px 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 5px;
+  }
+
+  .btn-round:hover {
+    background-color: #218838;
+  }
+
+  .history-list {
+    list-style: none;
+    max-height: 200px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+  }
+
+  .history-list li {
+    padding: 6px 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .highlight {
+    background-color: #e1f5fe;
+    animation: fadeOut 1s ease-in-out forwards;
+  }
+
+  @keyframes fadeOut {
+    0% { background-color: #e1f5fe; }
+    100% { background-color: transparent; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    animation: fadeIn 0.4s ease-in-out;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  .text-red {
+    color: #dc3545;
+  }
+
+  .icon-warning {
+    color: #dc3545; /* czerwony */
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+
 }
