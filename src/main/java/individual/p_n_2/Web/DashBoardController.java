@@ -18,7 +18,9 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class DashBoardController {
@@ -41,7 +43,7 @@ public class DashBoardController {
                             Authentication authentication) {
 
         DateTimeFormatter htmlFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter pdfFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // <== KLUCZOWA ZMIANA
+        DateTimeFormatter pdfFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         LocalDate fromDate = (from != null && !from.isEmpty()) ? LocalDate.parse(from, htmlFormatter) : null;
         LocalDate toDate = (to != null && !to.isEmpty()) ? LocalDate.parse(to, htmlFormatter) : null;
@@ -50,27 +52,36 @@ public class DashBoardController {
         File[] pdfFiles = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".pdf"));
 
         List<InvoiceData> invoices = new ArrayList<>();
+        Map<String, Integer> commentCounts = new HashMap<>();
 
         if (pdfFiles != null) {
             for (File file : pdfFiles) {
                 try {
                     InvoiceData data = pdfParser.parse(file);
-                    data.setFilename(file.getName());
-
-                    int phoneCount = interactionService.countPhoneCallsForInvoice(data.getInvoiceNumber());
-                    data.setPhoneCalls(phoneCount);
-
-                    if (fromDate != null || toDate != null) {
-                        if (data.getPaymentDate() != null) {
-                            LocalDate paymentDate = LocalDate.parse(data.getPaymentDate(), pdfFormatter);
-
-                            if ((fromDate == null || !paymentDate.isBefore(fromDate)) &&
-                                    (toDate == null || !paymentDate.isAfter(toDate))) {
-                                invoices.add(data);
-                            }
+                    if (data != null) {
+                        if (data.isSettled()) {
+                            // Usuń historię tej faktury z bazy danych
+                            interactionService.deleteHistoryForInvoice(data.getInvoiceNumber());
+                            continue; // Pomijamy tę fakturę w dashboardzie
                         }
-                    } else {
-                        invoices.add(data);
+
+                        int phoneCount = interactionService.countPhoneCallsForInvoice(data.getInvoiceNumber());
+                        int commentCount = interactionService.countCommentsForInvoice(data.getInvoiceNumber());
+                        data.setPhoneCalls(phoneCount);
+                        commentCounts.put(data.getInvoiceNumber(), commentCount);
+
+                        if (fromDate != null || toDate != null) {
+                            if (data.getPaymentDate() != null) {
+                                LocalDate paymentDate = LocalDate.parse(data.getPaymentDate(), pdfFormatter);
+
+                                if ((fromDate == null || !paymentDate.isBefore(fromDate)) &&
+                                        (toDate == null || !paymentDate.isAfter(toDate))) {
+                                    invoices.add(data);
+                                }
+                            }
+                        } else {
+                            invoices.add(data);
+                        }
                     }
 
                 } catch (Exception e) {
@@ -99,6 +110,7 @@ public class DashBoardController {
         model.addAttribute("errorCount", errorCount);
         model.addAttribute("from", from);
         model.addAttribute("to", to);
+        model.addAttribute("commentCounts", commentCounts);
 
         User user = userService.findByEmail(authentication.getName());
         model.addAttribute("fullName", user.getFullName());

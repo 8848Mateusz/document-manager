@@ -3,6 +3,7 @@ package individual.p_n_2.Service;
 import individual.p_n_2.Domain.InvoiceInteraction;
 import individual.p_n_2.Repository.InvoiceInteractionRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,8 +51,19 @@ public class InvoiceInteractionService {
                 ));
     }
 
-    // Metoda do liczenia telefonów dla jednej faktury
+    // Liczba kontaktów telefonicznych dla jednej faktury
     public int countPhoneCallsForInvoice(String invoiceNumber) {
         return repository.countByInvoiceNumberAndType(invoiceNumber, "phone");
+    }
+
+    // Liczba komentarzy dla jednej faktury
+    public int countCommentsForInvoice(String invoiceNumber) {
+        return repository.countByInvoiceNumberAndType(invoiceNumber, "comment");
+    }
+
+    // Usuwanie historii z bazy danych po opłaceniu faktury
+    @Transactional
+    public void deleteHistoryForInvoice(String invoiceNumber) {
+        repository.deleteByInvoiceNumber(invoiceNumber);
     }
 }

@@ -8,4 +8,6 @@ import java.util.List;
 public interface InvoiceInteractionRepository extends JpaRepository<InvoiceInteraction, Long> {
     List<InvoiceInteraction> findByInvoiceNumberOrderByTimestampDesc(String invoiceNumber);
     int countByInvoiceNumberAndType(String invoiceNumber, String type);
+    void deleteByInvoiceNumber(String invoiceNumber);
+
 }

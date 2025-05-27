@@ -66,7 +66,7 @@
                 <th>Termin płatności</th>
                 <th>Kwota brutto</th>
                 <th>Kwota do zapłaty</th>
-                <th>Rozliczono</th>
+                <th><i class="fa fa-comment text-blue" title="Komentarze"></i></th>
                 <th><i class="fa fa-envelope-open text-red" title="Status wiadomości"></i></th>
                 <th><i class="fa fa-phone text-green" style="margin-left: 8px;" title="Kontakt telefoniczny"></i></th>
                 <th>Szczegóły</th>
@@ -113,11 +113,9 @@
                             ${invoice.formattedGrossAmount}
                     </td>
 
+                    <c:set var="commentCount" value="${commentCounts[invoice.invoiceNumber]}" />
                     <td>
-                        <c:choose>
-                            <c:when test="${invoice.settled}">Tak</c:when>
-                            <c:otherwise>Nie</c:otherwise>
-                        </c:choose>
+                        <span>${commentCount != null ? commentCount : 0}</span>
                     </td>
 
                     <td>0</td>
