@@ -1,6 +1,6 @@
-
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <!DOCTYPE html>
 <html lang="pl">
@@ -20,7 +20,9 @@
         <div class="container-fluid d-flex justify-content-between align-items-center">
             <a></a>
             <div class="user-dropdown position-relative">
-                <span class="user-toggle" onclick="toggleUserMenu()"><b>${fullName}</b> <i class="fa fa-caret-down"></i></span>
+                <span class="user-toggle" onclick="toggleUserMenu()">
+                    <b>${fullName}</b> <i class="fa fa-caret-down"></i>
+                </span>
                 <ul id="userMenu" class="user-menu">
                     <li><a href="/home">Wybór sekcji</a></li>
                     <li><a href="/logout">Wyloguj</a></li>
@@ -60,15 +62,19 @@
             <thead>
             <tr>
                 <th><input type="checkbox" id="select-all"></th>
-                <th>#ID</th>
                 <th>Kontrahent</th>
                 <th>Numer faktury</th>
-                <th>Termin płatności</th>
+                <th>Data wystawienia
+                    <i class="sort-icon fa fa-sort" data-column-index="3" data-sort-order="asc"></i>
+                </th>
+                <th>Termin płatności
+                    <i class="sort-icon fa fa-sort" data-column-index="4" data-sort-order="asc"></i>
+                </th>
                 <th>Kwota brutto</th>
                 <th>Kwota do zapłaty</th>
                 <th><i class="fa fa-comment text-blue" title="Komentarze"></i></th>
                 <th><i class="fa fa-envelope-open text-red" title="Status wiadomości"></i></th>
-                <th><i class="fa fa-phone text-green" style="margin-left: 8px;" title="Kontakt telefoniczny"></i></th>
+                <th><i class="fa fa-phone text-green" title="Kontakt telefoniczny"></i></th>
                 <th>Szczegóły</th>
             </tr>
             </thead>
@@ -76,16 +82,26 @@
             <c:forEach var="invoice" items="${invoices}">
                 <tr data-invoice-number="${invoice.invoiceNumber}">
                     <td><input type="checkbox" class="row-check" data-filename="${invoice.filename}"></td>
-                    <td>0</td>
-                    <td>${invoice.contractor}</td>
-                    <td>${invoice.invoiceNumber}</td>
-                    <td>${invoice.formattedPaymentDate}</td>
+                    <td class="${empty invoice.contractor ? 'error-cell' : ''}">
+                            ${invoice.contractor}
+                    </td>
+                    <td class="${empty invoice.invoiceNumber ? 'error-cell' : ''}">
+                            ${invoice.invoiceNumber}
+                    </td>
+                    <td class="${empty invoice.formattedInvoiceIssueDate ? 'error-cell' : ''}">
+                            ${invoice.formattedInvoiceIssueDate}
+                    </td>
+                    <td class="${empty invoice.formattedPaymentDate ? 'error-cell' : ''}">
+                            ${invoice.formattedPaymentDate}
+                    </td>
                     <td>${invoice.formattedGrossAmount}</td>
                     <td>${invoice.formattedAmountDue}</td>
                     <td><span class="comment-count">${commentCounts[invoice.invoiceNumber] != null ? commentCounts[invoice.invoiceNumber] : 0}</span></td>
                     <td>0</td>
                     <td><span class="phone-count">${invoice.phoneCalls}</span></td>
-                    <td><a class="btn-details" onclick="openInvoiceModal('${invoice.invoiceNumber}')">Wyświetl</a></td>
+                    <td>
+                        <a class="btn-details" onclick="openInvoiceModal('${invoice.invoiceNumber}')">Wyświetl</a>
+                    </td>
                 </tr>
             </c:forEach>
             </tbody>

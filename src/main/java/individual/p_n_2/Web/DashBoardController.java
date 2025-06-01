@@ -41,7 +41,6 @@ public class DashBoardController {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model, Authentication authentication) {
-        // Renderuje pusty widok (lub np. dane cache'owane)
         addCommonAttributes(model, authentication);
         return "dashboard";
     }
@@ -69,8 +68,8 @@ public class DashBoardController {
                     if (data != null && data.getInvoiceNumber() != null) {
                         boolean isUnpaidAndOverdue = symfoniaInvoiceService.isInvoiceUnpaidAndOverdue(data.getInvoiceNumber());
                         if (isUnpaidAndOverdue) {
-                            if (data.getGrossAmount() == null) data.setGrossAmount(BigDecimal.ZERO);
 
+                            if (data.getGrossAmount() == null) data.setGrossAmount(BigDecimal.ZERO);
                             BigDecimal rozliczone = symfoniaInvoiceService.getRozliczoneForInvoice(data.getInvoiceNumber());
                             BigDecimal kwotaDoZaplaty = data.getGrossAmount().subtract(rozliczone).max(BigDecimal.ZERO);
                             data.setAmountDue(kwotaDoZaplaty);
@@ -80,13 +79,39 @@ public class DashBoardController {
                             data.setPhoneCalls(phoneCount);
                             commentCounts.put(data.getInvoiceNumber(), commentCount);
 
+                            // Data wystawienia: wyciągamy z Symfonii lub zostawiamy null
+                            String issueDate = symfoniaInvoiceService.getInvoiceIssueDate(data.getInvoiceNumber());
+                            if (issueDate != null && !issueDate.isEmpty()) {
+                                try {
+                                    LocalDate issueDateParsed = LocalDate.parse(issueDate);
+                                    data.setInvoiceIssueDate(issueDateParsed.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+                                } catch (Exception e) {
+                                    data.setInvoiceIssueDate(issueDate);
+                                }
+                            }
+
+                            // Data płatności
+                            if (data.getPaymentDate() != null && !data.getPaymentDate().isEmpty()) {
+                                try {
+                                    LocalDate paymentDateParsed = LocalDate.parse(data.getPaymentDate());
+                                    data.setPaymentDate(paymentDateParsed.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+                                } catch (Exception e) {
+                                }
+                            }
+
+                            // UWAGA: Usunąłem filtr odrzucający faktury z brakami!
+                            // Dzięki temu wyświetlą się wszystkie, nawet jeśli brakuje np. paymentDate.
+
+                            // Filtrowanie dat płatności
                             if (fromDate != null || toDate != null) {
-                                if (data.getPaymentDate() != null) {
-                                    LocalDate paymentDate = LocalDate.parse(data.getPaymentDate());
+                                if (data.getPaymentDate() != null && !data.getPaymentDate().isEmpty()) {
+                                    LocalDate paymentDate = LocalDate.parse(data.getPaymentDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
                                     if ((fromDate == null || !paymentDate.isBefore(fromDate)) &&
                                             (toDate == null || !paymentDate.isAfter(toDate))) {
                                         invoices.add(data);
                                     }
+                                } else {
+                                    invoices.add(data); // Dodaj również jeśli brakuje daty
                                 }
                             } else {
                                 invoices.add(data);
@@ -99,17 +124,17 @@ public class DashBoardController {
             }
         }
 
+        // Aktualizacja
         LocalDateTime aktualizacja = LocalDateTime.now();
         DateTimeFormatter aktualizacjaFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy, HH:mm", new Locale("pl"));
         String aktualizacjaFormatted = aktualizacja.format(aktualizacjaFormatter);
-
         model.addAttribute("aktualizacja", aktualizacjaFormatted);
 
-        int invoiceCount = invoices.size();
-        model.addAttribute("invoiceCount", invoiceCount);
-
+        // Liczba pozycji
+        model.addAttribute("invoiceCount", invoices.size());
         model.addAttribute("commentCounts", commentCounts);
 
+        // Suma do zapłaty
         BigDecimal totalToPay = invoices.stream()
                 .map(InvoiceData::getAmountDue)
                 .filter(Objects::nonNull)
@@ -123,11 +148,14 @@ public class DashBoardController {
 
         String totalToPayFormatted = formatter.format(totalToPay) + " zł";
 
+        // Licznik błędów
         int errorCount = (int) invoices.stream()
-                .filter(dto -> dto.getInvoiceNumber() == null ||
-                        dto.getContractor() == null ||
-                        dto.getPaymentDate() == null ||
-                        dto.getAmountDue() == null)
+                .filter(dto -> dto.getInvoiceNumber() == null || dto.getInvoiceNumber().isEmpty()
+                        || dto.getContractor() == null || dto.getContractor().isEmpty()
+                        || dto.getInvoiceIssueDate() == null || dto.getInvoiceIssueDate().isEmpty()
+                        || dto.getPaymentDate() == null || dto.getPaymentDate().isEmpty()
+                        || dto.getGrossAmount() == null
+                        || dto.getAmountDue() == null)
                 .count();
 
         model.addAttribute("invoices", invoices);
@@ -135,7 +163,6 @@ public class DashBoardController {
         model.addAttribute("errorCount", errorCount);
         model.addAttribute("from", from);
         model.addAttribute("to", to);
-        model.addAttribute("commentCounts", commentCounts);
 
         addCommonAttributes(model, authentication);
         return "dashboard";

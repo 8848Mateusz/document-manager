@@ -10934,28 +10934,125 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
     cursor: pointer;
   }
 
+  /* ================================
+   FORMATOWANIE TABEL W DASHBOARD
+   ================================ */
+
   .invoice-table {
+    table-layout: fixed;
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 20px;
+  }
+
+  .invoice-table thead {
+    background-color: #f3f3f3;
+    text-align: center;
   }
 
   .invoice-table th,
   .invoice-table td {
-    padding: 10px;
+    padding: 10px 6px;
     border-bottom: 1px solid #ddd;
-    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     vertical-align: middle;
+    text-align: center;
+    max-width: 120px; /* globalne ograniczenie szerokości kolumny, zmniejsza nadmierne rozszerzanie */
+  }
+
+  /* Kolumny specyficzne */
+  .invoice-table th:nth-child(1),
+  .invoice-table td:nth-child(1) {
+    width: 40px;
+  }
+
+  .invoice-table th:nth-child(2),
+  .invoice-table td:nth-child(2) {
+    text-align: left;
+    word-wrap: break-word;
+    white-space: normal;
+    width:  180px;
+  }
+
+  .invoice-table th:nth-child(3),
+  .invoice-table td:nth-child(3) {
+    width: 75px;
+  }
+
+  .invoice-table th:nth-child(4),
+  .invoice-table td:nth-child(4) {
+    width: 95px;
+  }
+
+  .invoice-table th:nth-child(5),
+  .invoice-table td:nth-child(5) {
+    width: 95px;
+  }
+
+  .invoice-table th:nth-child(6),
+  .invoice-table td:nth-child(6),
+  .invoice-table th:nth-child(7),
+  .invoice-table td:nth-child(7) {
+    width: 85px;
+    text-align: right;
+  }
+
+  .invoice-table th:nth-child(8),
+  .invoice-table td:nth-child(8),
+  .invoice-table th:nth-child(9),
+  .invoice-table td:nth-child(9),
+  .invoice-table th:nth-child(10),
+  .invoice-table td:nth-child(10) {
+    width: 30px;
+    text-align: center;
+  }
+
+  .invoice-table th:nth-child(11),
+  .invoice-table td:nth-child(11) {
+    width: 55px;
+    text-align: center;
   }
 
   .invoice-table th {
-    background-color: #f0f0f0;
+    background-color: #f5f5f5;
+    font-weight: 600;
+    position: relative;
   }
 
-  .invoice-table td:first-child,
-  .invoice-table th:first-child {
-    text-align: center;
-    width: 40px;
+  .invoice-table tr:nth-child(even) {
+    background-color: #fafafa;
   }
+
+  .invoice-table tr:nth-child(odd) {
+    background-color: #ffffff;
+  }
+
+  .invoice-table tr:hover {
+    background-color: #e6f7ff;
+    cursor: pointer;
+  }
+
+  .invoice-table td,
+  .invoice-table th {
+    border-right: 1px solid #ddd;
+  }
+
+  .invoice-table tr td:last-child,
+  .invoice-table tr th:last-child {
+    border-right: none;
+  }
+
+  .invoice-table td {
+    font-size: 13px;
+  }
+
 
   .btn-details {
     background-color: #6c757d;
@@ -10979,6 +11076,10 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
   .text-red {
     color: #dc3545;
   }
+
+  /* ================================
+     DODATKOWE ELEMENTY UI
+     ================================ */
 
   .dashboard-header {
     display: flex;
@@ -11020,8 +11121,8 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
     padding: 5px 0;
     display: none;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    min-width: 160px; /* NIE UCINA TEKSTU */
-    white-space: nowrap; /* Cała linia */
+    min-width: 160px;
+    white-space: nowrap;
     z-index: 1000;
   }
 
@@ -11107,90 +11208,6 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
     color: #fff;
     background-color: #007bff;
     border-color: #007bff;
-  }
-
-  .invoice-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    font-size: 14px;
-  }
-
-  .invoice-table thead {
-    background-color: #f3f3f3;
-    text-align: left;
-  }
-
-  .invoice-table th, .invoice-table td {
-    padding: 10px 8px;
-    border: 1px solid #ddd;
-    vertical-align: middle;
-    text-align: center;
-    white-space: nowrap;
-  }
-
-  .invoice-table th:nth-child(1), /* checkbox */
-  .invoice-table td:nth-child(1) {
-    width: 40px;
-    text-align: center;
-  }
-
-  .invoice-table th:nth-child(2), /* #ID */
-  .invoice-table td:nth-child(2) {
-    width: 45px;
-    text-align: center;
-  }
-
-  .invoice-table th:nth-child(3), /* Kontrahent */
-  .invoice-table td:nth-child(3) {
-    width: 18%;
-    white-space: normal;
-  }
-
-  .invoice-table th:nth-child(4), /* Numer faktury */
-  .invoice-table td:nth-child(4) {
-    width: 11%;
-  }
-
-  .invoice-table th:nth-child(5), /* Termin płatności */
-  .invoice-table td:nth-child(5) {
-    width: 11%;
-  }
-
-  .invoice-table th:nth-child(6), /* Kwota brutto */
-  .invoice-table td:nth-child(6) {
-    width: 9%;
-    text-align: right;
-  }
-
-  .invoice-table th:nth-child(7), /* Kwota do zapłaty */
-  .invoice-table td:nth-child(7) {
-    width: 9%;
-    text-align: right;
-  }
-
-  .invoice-table th:nth-child(8), /* Rozliczono */
-  .invoice-table td:nth-child(8) {
-    width: 6%;
-    text-align: center;
-  }
-
-  .invoice-table th:nth-child(9), /* Ikona koperty */
-  .invoice-table td:nth-child(9) {
-    width: 5%;
-    text-align: center;
-  }
-
-  .invoice-table th:nth-child(10), /* Ikona telefonu */
-  .invoice-table td:nth-child(10) {
-    width: 5%;
-    text-align: center;
-  }
-
-  .invoice-table th:nth-child(11), /* Przycisk */
-  .invoice-table td:nth-child(11) {
-    width: 8%;
-    text-align: center;
   }
 
   .modal-overlay {
@@ -11420,4 +11437,22 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
 .created-by {
   font-weight: bold;
   color: #555;
+}
+
+.sort-icon {
+  margin-left: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #6c757d;
+  transition: color 0.2s;
+}
+
+.sort-icon:hover {
+  color: #000;
+}
+
+.error-cell {
+  background-color: #ffe6e6;
+  color: #d9534f;
+  font-weight: bold;
 }

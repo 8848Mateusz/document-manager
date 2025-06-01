@@ -198,3 +198,57 @@ function cancelLoading() {
     }
     window.location.href = "/home";  // przekierowanie do strony głównej
 }
+
+function sortTableByDate(columnIndex, order) {
+    const table = document.querySelector('.invoice-table tbody');
+    const rows = Array.from(table.rows);
+
+    const sortedRows = rows.sort((a, b) => {
+        const aDate = parseDate(a.cells[columnIndex].innerText.trim());
+        const bDate = parseDate(b.cells[columnIndex].innerText.trim());
+
+        if (!aDate || !bDate) return 0; // Jeśli brak daty – traktuj równo
+
+        return order === 'asc' ? aDate - bDate : bDate - aDate;
+    });
+
+    table.innerHTML = '';
+    sortedRows.forEach(row => table.appendChild(row));
+}
+
+function parseDate(dateString) {
+    if (!dateString || !dateString.includes('-')) return null;
+
+    const parts = dateString.split("-");
+    if (parts.length === 3) {
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const year = parseInt(parts[2], 10);
+        return new Date(year, month, day);
+    }
+    return null;
+}
+
+document.querySelectorAll('.sort-icon').forEach(function(icon) {
+    icon.addEventListener('click', function() {
+        const columnIndex = parseInt(icon.getAttribute('data-column-index'), 10);
+        let order = icon.getAttribute('data-sort-order');
+
+        // Zmień sortowanie (asc ↔ desc)
+        order = order === 'asc' ? 'desc' : 'asc';
+        icon.setAttribute('data-sort-order', order);
+
+        // Wykonaj sortowanie
+        sortTableByDate(columnIndex, order);
+
+        // Resetuj wszystkie ikony
+        document.querySelectorAll('.sort-icon').forEach(function(i) {
+            i.classList.remove('fa-sort-up', 'fa-sort-down');
+            i.classList.add('fa-sort');
+        });
+
+        // Ustaw aktywną ikonę
+        icon.classList.remove('fa-sort');
+        icon.classList.add(order === 'asc' ? 'fa-sort-up' : 'fa-sort-down');
+    });
+});

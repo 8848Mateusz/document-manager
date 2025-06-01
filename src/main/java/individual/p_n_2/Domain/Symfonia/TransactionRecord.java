@@ -27,6 +27,9 @@ public class TransactionRecord {
     @Column(name = "datarozl")
     private LocalDate datarozl;
 
+    @Column(name = "data")
+    private LocalDate data;
+
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -50,4 +53,12 @@ public class TransactionRecord {
 
     public LocalDate getDatarozl() { return datarozl; }
     public void setDatarozl(LocalDate datarozl) { this.datarozl = datarozl; }
+
+    public LocalDate getData() {
+        return data;
+    }
+
+    public void setData(LocalDate data) {
+        this.data = data;
+    }
 }

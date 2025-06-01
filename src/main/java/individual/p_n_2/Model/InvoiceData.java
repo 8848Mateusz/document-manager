@@ -15,8 +15,27 @@ public class InvoiceData {
     private boolean settled;
     private String filename;
     private int phoneCalls;
+    private String invoiceIssueDate;
 
-    // Formatowanie
+    // FORMATY DATY
+    public String getFormattedInvoiceIssueDate() {
+        try {
+            LocalDate date = LocalDate.parse(this.invoiceIssueDate);
+            return date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        } catch (Exception e) {
+            return this.invoiceIssueDate;
+        }
+    }
+
+    public String getFormattedPaymentDate() {
+        try {
+            LocalDate date = LocalDate.parse(this.paymentDate);
+            return date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        } catch (Exception e) {
+            return this.paymentDate;
+        }
+    }
+
     public String getFormattedGrossAmount() {
         if (grossAmount == null) return "0,00 zł";
         NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("pl", "PL"));
@@ -33,13 +52,28 @@ public class InvoiceData {
         return formatter.format(amountDue) + " zł";
     }
 
-    public String getFormattedPaymentDate() {
-        try {
-            LocalDate date = LocalDate.parse(this.paymentDate);
-            return date.format(DateTimeFormatter.ofPattern("d MMMM yyyy", new Locale("pl")));
-        } catch (Exception e) {
-            return this.paymentDate;
-        }
+    // Metody do sprawdzania braków danych
+    public boolean hasMissingInvoiceNumber() {
+        return invoiceNumber == null || invoiceNumber.isEmpty();
+    }
+
+    public boolean hasMissingContractor() {
+        return contractor == null || contractor.isEmpty();
+    }
+
+    public boolean hasMissingPaymentDate() {
+        return paymentDate == null || paymentDate.isEmpty();
+    }
+
+    public boolean hasMissingAmountDue() {
+        return amountDue == null;
+    }
+
+    public boolean hasErrors() {
+        return hasMissingInvoiceNumber() ||
+                hasMissingContractor() ||
+                hasMissingPaymentDate() ||
+                hasMissingAmountDue();
     }
 
 
@@ -67,4 +101,6 @@ public class InvoiceData {
     public int getPhoneCalls() { return phoneCalls; }
     public void setPhoneCalls(int phoneCalls) { this.phoneCalls = phoneCalls; }
 
+    public String getInvoiceIssueDate() { return invoiceIssueDate; }
+    public void setInvoiceIssueDate(String invoiceIssueDate) { this.invoiceIssueDate = invoiceIssueDate; }
 }

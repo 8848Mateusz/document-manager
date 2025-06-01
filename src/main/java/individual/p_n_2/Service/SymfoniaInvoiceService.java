@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,5 +62,20 @@ public class SymfoniaInvoiceService {
         }
 
         return BigDecimal.ZERO;
+    }
+
+    /**
+     * Pobiera datę wystawienia faktury z pola "data" w Symfonii (tylko rok, miesiąc i dzień).
+     */
+    public String getInvoiceIssueDate(String invoiceNumber) {
+        Optional<TransactionRecord> recordOpt = transactionRecordRepository.findFirstByNumerFakturyOrderByIdDesc(invoiceNumber);
+
+        if (recordOpt.isPresent() && recordOpt.get().getData() != null) {
+            LocalDate issueDate = recordOpt.get().getData();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return issueDate.format(formatter);
+        }
+
+        return "";
     }
 }
