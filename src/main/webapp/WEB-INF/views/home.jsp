@@ -19,7 +19,9 @@
      width: 100%; height: 100%; background: rgba(0,0,0,0.6);
      z-index: 9999; color: white; font-size: 18px; text-align: center;
      padding-top: 20%;">
-    <div>
+    <div style="position: relative; display: inline-block; background: rgba(0,0,0,0.8); padding: 30px 60px; border-radius: 8px;">
+        <div class="loader-close" style="position: absolute; top: 10px; right: 15px; font-size: 30px; cursor: pointer;"
+             onclick="cancelLoading()">&times;</div>
         <div class="loader"></div>
         <p>Proszę czekać, trwa wczytywanie danych...</p>
     </div>

@@ -2,6 +2,8 @@ package individual.p_n_2.Service;
 
 import individual.p_n_2.Domain.User.InvoiceInteraction;
 import individual.p_n_2.Repository.User.InvoiceInteractionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class InvoiceInteractionService {
+
+    @Autowired
+    private UserService userService;
 
     private final InvoiceInteractionRepository repository;
 
@@ -25,6 +30,10 @@ public class InvoiceInteractionService {
         interaction.setType("comment");
         interaction.setValue(comment);
         interaction.setTimestamp(LocalDateTime.now());
+        // Pobierz aktualnego użytkownika
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        String fullName = userService.findByEmail(userEmail).getFullName();
+        interaction.setCreatedBy(fullName); // ustaw pełne imię i nazwisko
         repository.save(interaction);
     }
 
@@ -34,6 +43,10 @@ public class InvoiceInteractionService {
         interaction.setType("phone");
         interaction.setValue(null);
         interaction.setTimestamp(LocalDateTime.now());
+        // Pobierz aktualnego użytkownika
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        String fullName = userService.findByEmail(userEmail).getFullName();
+        interaction.setCreatedBy(fullName);
         repository.save(interaction);
     }
 

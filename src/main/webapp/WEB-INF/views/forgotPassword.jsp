@@ -14,18 +14,18 @@
     <c:if test="${not empty error}">
         <div class="alert-message">${error}</div>
     </c:if>
-    <h2>Forgot your password?</h2>
+    <h2>Nie pamiętasz hasła?</h2>
 
     <form action="/forgotPassword" method="post">
         <div class="input-field">
             <input type="email" name="email" id="email" required />
-            <label for="email">Enter your email</label>
+            <label for="email">Podaj swój adres e-mail</label>
         </div>
 
-        <button type="submit">Send reset link</button>
+        <button type="submit">Wyślij link do resetu hasła</button>
     </form>
     <div class="register">
-        <p>Remember your password? <a href="/login"><b>Login</b></a></p>
+        <p>Pamiętasz swoje hasło? <a href="/login"><b>Zaloguj się</b></a></p>
     </div>
 </div>
 

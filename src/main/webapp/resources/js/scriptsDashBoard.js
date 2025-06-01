@@ -124,11 +124,11 @@ function fetchNotes(invoiceNumber) {
             data.forEach(note => {
                 const li = document.createElement('li');
                 if (note.type === "comment") {
-                    li.innerHTML = `💬 ${note.value} <small>(${note.timestamp})</small>`;
+                    li.innerHTML = `💬 ${note.value} <small>(${note.timestamp}) — <b>${note.createdBy}</b></small>`;
                     history.appendChild(li);
                 } else if (note.type === "phone") {
                     callCount++;
-                    li.innerHTML = `📞 Telefon <small>(${note.timestamp})</small>`;
+                    li.innerHTML = `📞 Telefon <small>(${note.timestamp}) — <b>${note.createdBy}</b></small>`;
                     calls.appendChild(li);
                 }
             });
@@ -189,4 +189,12 @@ if (btnPrzeterminowane) {
             window.location.href = btnPrzeterminowane.href;
         }, 300);
     });
+}
+
+function cancelLoading() {
+    const loader = document.getElementById("loadingModal");
+    if (loader) {
+        loader.style.display = "none";
+    }
+    window.location.href = "/home";  // przekierowanie do strony głównej
 }

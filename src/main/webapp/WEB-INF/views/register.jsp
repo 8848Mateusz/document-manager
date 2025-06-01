@@ -15,28 +15,28 @@
         <div class="alert-message">${errorMessage}</div>
     </c:if>
         <form action="/register" method="post" role="form" >
-        <h2>Create Account</h2>
+        <h2>Utwórz konto</h2>
         <div class="input-field">
             <input type="text" id="fullName" name="fullName" placeholder=" " required>
-            <label>Full name</label>
+            <label>Imię i nazwisko</label>
         </div>
         <div class="input-field">
             <input type="email" id="email" name="email" placeholder=" " required>
-            <div class="error-message">Email format is incorrect</div>
+            <div class="error-message">Niepoprawny format adresu e-mail</div>
             <label>E-mail</label>
         </div>
         <div class="input-field">
             <input type="password" id="password" name="password" placeholder=" " required />
-            <label for="password">Password</label>
+            <label for="password">Hasło</label>
         </div>
         <div class="input-field">
             <input type="password" id="confirmPassword" name="confirmPassword" placeholder=" " required />
-            <label for="confirmPassword">Confirm password</label>
-            <div class="error-message" id="passwordError">Both passwords must be the same</div>
+            <label for="confirmPassword">Potwierdź hasło</label>
+            <div class="error-message" id="passwordError">Oba hasła muszą być takie same</div>
         </div>
-        <button type="submit">Create</button>
+        <button type="submit">Utwórz konto</button>
         <div class="register">
-            <p>Already have an account? <a href="<c:url value='/login'/>"><b>Login</b></a></p>
+            <p>Masz już konto? <a href="<c:url value='/login'/>"><b>Zaloguj się</b></a></p>
         </div>
     </form>
 </div>

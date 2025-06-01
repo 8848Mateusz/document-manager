@@ -17,6 +17,9 @@ public class InvoiceInteraction {
     @Column(length = 1000)
     private String value; // treść komentarza lub null
 
+    @Column(name = "created_by")
+    private String createdBy;
+
     private LocalDateTime timestamp;
 
     public InvoiceInteraction() {
@@ -36,4 +39,12 @@ public class InvoiceInteraction {
 
     public LocalDateTime getTimestamp() { return timestamp; }
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
 }

@@ -11,21 +11,21 @@
   <c:if test="${not empty error}">
     <div class="alert-message">${error}</div>
   </c:if>
-  <h2>Reset your password</h2>
+  <h2>Resetowanie hasła</h2>
 
   <form action="/resetPassword" method="post">
     <input type="hidden" name="token" value="${token}" />
 
     <div class="input-field">
       <input type="password" name="password" id="password" required />
-      <label for="password">Enter new password</label>
+      <label for="password">Podaj nowe hasło</label>
     </div>
 
-    <button type="submit">Reset Password</button>
+    <button type="submit">Zresetuj hasło</button>
   </form>
 
   <div class="register">
-    <p>Go back to <a href="/login"><b>Login</b></a></p>
+    <p>Wróć do <a href="/login"><b>Logowania</b></a></p>
   </div>
 </div>
 

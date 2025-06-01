@@ -11416,3 +11416,8 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
+
+.created-by {
+  font-weight: bold;
+  color: #555;
+}

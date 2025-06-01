@@ -20,24 +20,24 @@
     <div class="alert-message">Zostałeś wylogowany</div>
   </c:if>
   <form action="/login" method="post">
-    <h2>Login</h2>
+    <h2>Logowanie</h2>
     <div class="input-field">
       <input type="text"  id="email" name="email" autocomplete="off" required>
-      <label>Enter your email</label>
+      <label>Podaj adres e-mail</label>
       <div class="error-msg" id="email-error"></div>
     </div>
     <div class="input-field">
       <input type="password" id="password" name="password" autocomplete="off" required>
-      <label>Enter your password</label>
+      <label>Podaj hasło</label>
       <div class="error-msg" id="password-error"></div>
     </div>
     <div class="forget">
       <label></label>
-      <a href="/forgotPassword">Forgot your password?</a>
+      <a href="/forgotPassword">Nie pamiętasz hasła?</a>
     </div>
-    <button type="submit">Log In</button>
+    <button type="submit">Zaloguj się</button>
     <div class="register">
-      <p>Don't have an account? <a href="<c:url value='/register'/>"><b>Register</b></a></p>
+      <p>Nie masz konta? <a href="<c:url value='/register'/>"><b>Zarejestruj się</b></a></p>
     </div>
   </form>
 </div>
