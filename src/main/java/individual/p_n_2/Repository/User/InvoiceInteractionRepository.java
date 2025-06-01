@@ -1,6 +1,6 @@
-package individual.p_n_2.Repository;
+package individual.p_n_2.Repository.User;
 
-import individual.p_n_2.Domain.InvoiceInteraction;
+import individual.p_n_2.Domain.User.InvoiceInteraction;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

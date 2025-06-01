@@ -11129,65 +11129,65 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
     white-space: nowrap;
   }
 
-  .invoice-table th:nth-child(1),  /* checkbox */
+  .invoice-table th:nth-child(1), /* checkbox */
   .invoice-table td:nth-child(1) {
     width: 40px;
     text-align: center;
   }
 
-  .invoice-table th:nth-child(2),  /* #ID */
+  .invoice-table th:nth-child(2), /* #ID */
   .invoice-table td:nth-child(2) {
     width: 45px;
     text-align: center;
   }
 
-  .invoice-table th:nth-child(3),  /* Kontrahent */
+  .invoice-table th:nth-child(3), /* Kontrahent */
   .invoice-table td:nth-child(3) {
     width: 18%;
     white-space: normal;
   }
 
-  .invoice-table th:nth-child(4),  /* Numer faktury */
+  .invoice-table th:nth-child(4), /* Numer faktury */
   .invoice-table td:nth-child(4) {
     width: 11%;
   }
 
-  .invoice-table th:nth-child(5),  /* Termin płatności */
+  .invoice-table th:nth-child(5), /* Termin płatności */
   .invoice-table td:nth-child(5) {
     width: 11%;
   }
 
-  .invoice-table th:nth-child(6),  /* Kwota brutto */
+  .invoice-table th:nth-child(6), /* Kwota brutto */
   .invoice-table td:nth-child(6) {
     width: 9%;
     text-align: right;
   }
 
-  .invoice-table th:nth-child(7),  /* Kwota do zapłaty */
+  .invoice-table th:nth-child(7), /* Kwota do zapłaty */
   .invoice-table td:nth-child(7) {
     width: 9%;
     text-align: right;
   }
 
-  .invoice-table th:nth-child(8),  /* Rozliczono */
+  .invoice-table th:nth-child(8), /* Rozliczono */
   .invoice-table td:nth-child(8) {
     width: 6%;
     text-align: center;
   }
 
-  .invoice-table th:nth-child(9),  /* Ikona koperty */
+  .invoice-table th:nth-child(9), /* Ikona koperty */
   .invoice-table td:nth-child(9) {
     width: 5%;
     text-align: center;
   }
 
-  .invoice-table th:nth-child(10),  /* Ikona telefonu */
+  .invoice-table th:nth-child(10), /* Ikona telefonu */
   .invoice-table td:nth-child(10) {
     width: 5%;
     text-align: center;
   }
 
-  .invoice-table th:nth-child(11),  /* Przycisk */
+  .invoice-table th:nth-child(11), /* Przycisk */
   .invoice-table td:nth-child(11) {
     width: 8%;
     text-align: center;
@@ -11228,7 +11228,7 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
     max-height: 90vh;
     overflow-y: auto;
     padding: 25px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
     position: relative;
   }
 
@@ -11312,13 +11312,23 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
   }
 
   @keyframes fadeOut {
-    0% { background-color: #e1f5fe; }
-    100% { background-color: transparent; }
+    0% {
+      background-color: #e1f5fe;
+    }
+    100% {
+      background-color: transparent;
+    }
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(-5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .fade-in {
@@ -11341,4 +11351,68 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
   }
 
 
+}
+.spinner-border {
+  display: inline-block;
+  width: 3rem;
+  height: 3rem;
+  border: 0.25em solid white;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner-border 0.75s linear infinite;
+}
+@keyframes spinner-border {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Spinner container (umieszczone w <div id="loadingModal">) */
+#loadingModal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 9999;
+  text-align: center;
+  color: white;
+  font-size: 18px;
+  padding-top: 20%;
+}
+
+/* Nowy spinner */
+.loader {
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+}
+.loader:after {
+  content: " ";
+  display: block;
+  width: 46px;
+  height: 46px;
+  margin: 1px;
+  border-radius: 50%;
+  border: 5px solid white;
+  border-color: white transparent white transparent;
+  animation: loader-spin 1.2s linear infinite;
+}
+@keyframes loader-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.refresh-icon {
+  cursor: pointer;
+  margin-left: 8px;
+  transition: transform 0.5s ease-in-out;
+}
+.refresh-icon.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }

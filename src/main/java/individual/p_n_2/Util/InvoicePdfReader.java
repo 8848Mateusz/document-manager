@@ -6,6 +6,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +48,7 @@ public class InvoicePdfReader {
                 } else if (cleaned.contains(",") && cleaned.contains(".")) {
                     cleaned = cleaned.replace(",", "");
                 }
-                data.setGrossAmount(cleaned);
+                data.setGrossAmount(new BigDecimal(cleaned));
             }
 
         } catch (IOException e) {

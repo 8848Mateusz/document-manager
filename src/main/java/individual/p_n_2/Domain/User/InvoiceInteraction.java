@@ -1,4 +1,4 @@
-package individual.p_n_2.Domain;
+package individual.p_n_2.Domain.User;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

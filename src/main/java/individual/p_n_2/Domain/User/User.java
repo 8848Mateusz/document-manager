@@ -1,4 +1,4 @@
-package individual.p_n_2.Domain;
+package individual.p_n_2.Domain.User;
 
 import jakarta.persistence.*;
 import org.antlr.v4.runtime.misc.NotNull;
@@ -17,6 +17,7 @@ public class User {
     private Long id;
 
     @NonNull
+    @Column(name = "full_name", nullable = false, unique = true)
     private String fullName;
 
     @Email

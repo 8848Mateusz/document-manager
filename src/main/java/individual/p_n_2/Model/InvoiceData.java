@@ -10,39 +10,38 @@ public class InvoiceData {
     private String invoiceNumber;
     private String contractor;
     private String paymentDate;
-    private String grossAmount;
+    private BigDecimal grossAmount;
+    private BigDecimal amountDue;
     private boolean settled;
     private String filename;
     private int phoneCalls;
 
-    //  Getter do wyświetlania sformatowanej kwoty
+    // Formatowanie
     public String getFormattedGrossAmount() {
-        try {
-            double value = Double.parseDouble(grossAmount.replace(",", "."));
-            return NumberFormat.getCurrencyInstance(new Locale("pl", "PL")).format(value);
-        } catch (Exception e) {
-            return grossAmount;
-        }
+        if (grossAmount == null) return "0,00 zł";
+        NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("pl", "PL"));
+        formatter.setMinimumFractionDigits(2);
+        formatter.setMaximumFractionDigits(2);
+        return formatter.format(grossAmount) + " zł";
     }
 
-    //  Getter do sformatowanej daty (np. 2025-05-25 → 25 maja 2025)
+    public String getFormattedAmountDue() {
+        if (amountDue == null) return "0,00 zł";
+        NumberFormat formatter = NumberFormat.getNumberInstance(new Locale("pl", "PL"));
+        formatter.setMinimumFractionDigits(2);
+        formatter.setMaximumFractionDigits(2);
+        return formatter.format(amountDue) + " zł";
+    }
+
     public String getFormattedPaymentDate() {
         try {
-            LocalDate date = LocalDate.parse(paymentDate);
+            LocalDate date = LocalDate.parse(this.paymentDate);
             return date.format(DateTimeFormatter.ofPattern("d MMMM yyyy", new Locale("pl")));
         } catch (Exception e) {
-            return paymentDate;
+            return this.paymentDate;
         }
     }
 
-    //  Getter do wartości liczbowej – przydatne do sumowania
-    public BigDecimal getAmountDue() {
-        try {
-            return new BigDecimal(grossAmount.replace(",", "."));
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
     public String getInvoiceNumber() { return invoiceNumber; }
     public void setInvoiceNumber(String invoiceNumber) { this.invoiceNumber = invoiceNumber; }
@@ -53,8 +52,11 @@ public class InvoiceData {
     public String getPaymentDate() { return paymentDate; }
     public void setPaymentDate(String paymentDate) { this.paymentDate = paymentDate; }
 
-    public String getGrossAmount() { return grossAmount; }
-    public void setGrossAmount(String grossAmount) { this.grossAmount = grossAmount; }
+    public BigDecimal getGrossAmount() { return grossAmount; }
+    public void setGrossAmount(BigDecimal grossAmount) { this.grossAmount = grossAmount; }
+
+    public BigDecimal getAmountDue() { return amountDue; }
+    public void setAmountDue(BigDecimal amountDue) { this.amountDue = amountDue; }
 
     public boolean isSettled() { return settled; }
     public void setSettled(boolean settled) { this.settled = settled; }
@@ -64,4 +66,5 @@ public class InvoiceData {
 
     public int getPhoneCalls() { return phoneCalls; }
     public void setPhoneCalls(int phoneCalls) { this.phoneCalls = phoneCalls; }
+
 }

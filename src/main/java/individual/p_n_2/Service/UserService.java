@@ -1,7 +1,7 @@
 package individual.p_n_2.Service;
 
 import individual.p_n_2.Dto.UserDto;
-import individual.p_n_2.Domain.User;
+import individual.p_n_2.Domain.User.User;
 
 
 

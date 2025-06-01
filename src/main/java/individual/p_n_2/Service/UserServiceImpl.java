@@ -1,15 +1,15 @@
 package individual.p_n_2.Service;
 
 
-import individual.p_n_2.Domain.PasswordResetToken;
+import individual.p_n_2.Domain.User.PasswordResetToken;
 import individual.p_n_2.Dto.UserDto;
-import individual.p_n_2.Repository.PasswordResetTokenRepository;
-import individual.p_n_2.Repository.UserRepository;
+import individual.p_n_2.Repository.User.PasswordResetTokenRepository;
+import individual.p_n_2.Repository.User.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import individual.p_n_2.Domain.User;
+import individual.p_n_2.Domain.User.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;

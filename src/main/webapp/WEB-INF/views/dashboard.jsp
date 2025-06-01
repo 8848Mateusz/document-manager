@@ -1,11 +1,13 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dashboard</title>
 
     <link rel="icon" href="<c:url value='/resources/images/favicon.ico'/>"/>
@@ -14,11 +16,9 @@
 </head>
 <body>
 <div id="page-content-wrapper">
-    <!-- NAV -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
         <div class="container-fluid d-flex justify-content-between align-items-center">
             <a></a>
-
             <div class="user-dropdown position-relative">
                 <span class="user-toggle" onclick="toggleUserMenu()"><b>${fullName}</b> <i class="fa fa-caret-down"></i></span>
                 <ul id="userMenu" class="user-menu">
@@ -29,27 +29,27 @@
         </div>
     </nav>
 
-    <!-- CONTENT -->
     <div class="dashboard-container">
         <h2>Przeterminowane płatności</h2>
 
-        <form method="get" action="/dashboard" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <form method="get" action="/dashboard/load" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
             <label for="from">Data od:</label>
             <input type="date" id="from" name="from" value="${from}">
-
             <label for="to">do:</label>
             <input type="date" id="to" name="to" value="${to}">
-
             <button type="submit" class="btn-filter">Filtruj</button>
-
-            <a href="/dashboard" class="btn-filter" style="text-decoration: none; text-align: center;">Wyczyść</a>
+            <a href="/dashboard/load" class="btn-filter" style="text-decoration: none; text-align: center;">Wyczyść</a>
         </form>
         <br>
 
         <div class="status-bar">
-            <span>Ostatnia aktualizacja: 9 maja 2025, 14:57</span>
-            <span>Błędy: <b>${errorCount}</b></span>
-            <span>Łączna kwota netto do zapłaty: <strong>${totalToPay} zł</strong></span>
+            <span>
+                Ostatnia aktualizacja: <strong>${aktualizacja}</strong>
+                <i class="fa fa-sync-alt refresh-icon" onclick="refreshDashboard()" title="Odśwież dane"></i>
+            </span>
+            <span>Liczba pozycji: <strong>${invoiceCount}</strong></span>
+            <span>Błędy: <strong>${errorCount}</strong></span>
+            <span>Łączna kwota do zapłaty: <strong>${totalToPay}</strong></span>
         </div>
 
         <div class="action-buttons">
@@ -74,85 +74,43 @@
             </thead>
             <tbody>
             <c:forEach var="invoice" items="${invoices}">
-                <tr>
+                <tr data-invoice-number="${invoice.invoiceNumber}">
                     <td><input type="checkbox" class="row-check" data-filename="${invoice.filename}"></td>
                     <td>0</td>
-
-                    <td>
-                        <c:if test="${empty invoice.contractor}">
-                            <i class="fa fa-exclamation-triangle icon-warning" title="Brak kontrahenta"></i>
-                        </c:if>
-                            ${invoice.contractor}
-                    </td>
-
-                    <td>
-                        <c:if test="${empty invoice.invoiceNumber}">
-                            <i class="fa fa-exclamation-triangle icon-warning" title="Brak numeru faktury"></i>
-                        </c:if>
-                            ${invoice.invoiceNumber}
-                    </td>
-
-                    <td>
-                        <c:if test="${empty invoice.paymentDate}">
-                            <i class="fa fa-exclamation-triangle icon-warning" title="Brak daty płatności"></i>
-                        </c:if>
-                            ${invoice.formattedPaymentDate}
-                    </td>
-
-                    <td>
-                        <c:if test="${empty invoice.grossAmount}">
-                            <i class="fa fa-exclamation-triangle icon-warning" title="Brak kwoty brutto"></i>
-                        </c:if>
-                            ${invoice.formattedGrossAmount}
-                    </td>
-
-                    <td>
-                        <c:if test="${empty invoice.grossAmount}">
-                            <i class="fa fa-exclamation-triangle icon-warning" title="Brak kwoty brutto"></i>
-                        </c:if>
-                            ${invoice.formattedGrossAmount}
-                    </td>
-
-                    <c:set var="commentCount" value="${commentCounts[invoice.invoiceNumber]}" />
-                    <td>
-                        <span>${commentCount != null ? commentCount : 0}</span>
-                    </td>
-
+                    <td>${invoice.contractor}</td>
+                    <td>${invoice.invoiceNumber}</td>
+                    <td>${invoice.formattedPaymentDate}</td>
+                    <td>${invoice.formattedGrossAmount}</td>
+                    <td>${invoice.formattedAmountDue}</td>
+                    <td><span class="comment-count">${commentCounts[invoice.invoiceNumber] != null ? commentCounts[invoice.invoiceNumber] : 0}</span></td>
                     <td>0</td>
-
-                    <td><span>${invoice.phoneCalls}</span></td>
-
-                    <td>
-                        <a class="btn-details" onclick="openInvoiceModal('${invoice.invoiceNumber}')">Wyświetl</a>
-                    </td>
+                    <td><span class="phone-count">${invoice.phoneCalls}</span></td>
+                    <td><a class="btn-details" onclick="openInvoiceModal('${invoice.invoiceNumber}')">Wyświetl</a></td>
                 </tr>
             </c:forEach>
             </tbody>
         </table>
     </div>
-    <!-- MODAL: Szczegóły faktury -->
+
+    <!-- Modal -->
     <div id="invoiceModal" class="modal-overlay">
         <div class="modal-background" onclick="closeInvoiceModal()"></div>
         <div class="modal-window">
             <button class="modal-close" onclick="closeInvoiceModal()">&times;</button>
             <h3 id="modalInvoiceNumberTitle">Faktura: <span id="modalInvoiceNumber"></span></h3>
-
             <div class="modal-section">
                 <label>Rozmowy telefoniczne:</label>
                 <button onclick="incrementCallCounter()" class="btn-round">+1</button>
                 <span id="callCount">0</span>
             </div>
-
             <div class="modal-section">
                 <label for="newComment">Dodaj komentarz:</label>
                 <textarea id="newComment" rows="3" placeholder="Wpisz komentarz..."></textarea>
                 <button onclick="addComment()" class="btn-primary">Dodaj</button>
             </div>
-
             <div class="modal-section">
                 <h4>Historia komentarzy:</h4>
                 <ul id="commentHistory" class="history-list"></ul>
-
                 <h4>Historia kontaktów telefonicznych:</h4>
                 <ul id="callHistory" class="history-list"></ul>
             </div>
@@ -160,8 +118,15 @@
     </div>
 </div>
 
-
-</div>
+<!-- Loader -->
+<div id="loadingModal" style="display:none; position: fixed; top: 0; left: 0;
+     width: 100%; height: 100%; background: rgba(0,0,0,0.6);
+     z-index: 9999; color: white; font-size: 18px; text-align: center;
+     padding-top: 20%;">
+    <div>
+        <div class="loader"></div>
+        <p>Proszę czekać, trwa wczytywanie danych...</p>
+    </div>
 </div>
 
 <script src="<c:url value='/resources/js/scriptsDashBoard.js'/>"></script>

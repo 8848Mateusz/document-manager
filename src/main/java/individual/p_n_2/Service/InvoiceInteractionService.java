@@ -1,7 +1,7 @@
 package individual.p_n_2.Service;
 
-import individual.p_n_2.Domain.InvoiceInteraction;
-import individual.p_n_2.Repository.InvoiceInteractionRepository;
+import individual.p_n_2.Domain.User.InvoiceInteraction;
+import individual.p_n_2.Repository.User.InvoiceInteractionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
