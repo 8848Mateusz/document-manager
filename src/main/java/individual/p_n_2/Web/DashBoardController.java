@@ -1,19 +1,15 @@
 package individual.p_n_2.Web;
 
 import individual.p_n_2.Model.InvoiceData;
-import individual.p_n_2.Service.InvoiceInteractionService;
-import individual.p_n_2.Service.PdfInvoiceParserService;
-import individual.p_n_2.Service.SymfoniaInvoiceService;
-import individual.p_n_2.Service.UserService;
+import individual.p_n_2.Service.*;
 import individual.p_n_2.Domain.User.User;
+import individual.p_n_2.Domain.Symfonia.TransactionRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
@@ -29,15 +25,13 @@ public class DashBoardController {
     private UserService userService;
 
     @Autowired
-    private PdfInvoiceParserService pdfParser;
-
-    @Autowired
     private InvoiceInteractionService interactionService;
 
     @Autowired
     private SymfoniaInvoiceService symfoniaInvoiceService;
 
-    private static final String FOLDER = System.getProperty("user.home") + "/Desktop/faktury-testowe";
+    @Autowired
+    private EmailNotificationService notificationService;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model, Authentication authentication) {
@@ -55,86 +49,64 @@ public class DashBoardController {
         LocalDate fromDate = (from != null && !from.isEmpty()) ? LocalDate.parse(from, htmlFormatter) : null;
         LocalDate toDate = (to != null && !to.isEmpty()) ? LocalDate.parse(to, htmlFormatter) : null;
 
-        File folder = new File(FOLDER);
-        File[] pdfFiles = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".pdf"));
-
+        List<TransactionRecord> records = symfoniaInvoiceService.getOverdueUnpaidInvoices();
         List<InvoiceData> invoices = new ArrayList<>();
         Map<String, Integer> commentCounts = new HashMap<>();
 
-        if (pdfFiles != null) {
-            for (File file : pdfFiles) {
-                try {
-                    InvoiceData data = pdfParser.parse(file);
-                    if (data != null && data.getInvoiceNumber() != null) {
-                        boolean isUnpaidAndOverdue = symfoniaInvoiceService.isInvoiceUnpaidAndOverdue(data.getInvoiceNumber());
-                        if (isUnpaidAndOverdue) {
+        for (TransactionRecord record : records) {
+            try {
+                InvoiceData data = new InvoiceData();
+                data.setInvoiceNumber(record.getNumerFaktury());
+                data.setGrossAmount(record.getKwota() != null ? record.getKwota() : BigDecimal.ZERO);
 
-                            if (data.getGrossAmount() == null) data.setGrossAmount(BigDecimal.ZERO);
-                            BigDecimal rozliczone = symfoniaInvoiceService.getRozliczoneForInvoice(data.getInvoiceNumber());
-                            BigDecimal kwotaDoZaplaty = data.getGrossAmount().subtract(rozliczone).max(BigDecimal.ZERO);
-                            data.setAmountDue(kwotaDoZaplaty);
+                BigDecimal rozliczone = record.getKwotaRozliczona() != null ? record.getKwotaRozliczona() : BigDecimal.ZERO;
+                BigDecimal kwotaDoZaplaty = data.getGrossAmount().subtract(rozliczone).max(BigDecimal.ZERO);
+                data.setAmountDue(kwotaDoZaplaty);
 
-                            int phoneCount = interactionService.countPhoneCallsForInvoice(data.getInvoiceNumber());
-                            int commentCount = interactionService.countCommentsForInvoice(data.getInvoiceNumber());
-                            data.setPhoneCalls(phoneCount);
-                            commentCounts.put(data.getInvoiceNumber(), commentCount);
+                data.setContractor(symfoniaInvoiceService.getContractorName(record.getNumerFaktury()));
 
-                            // Data wystawienia: wyciągamy z Symfonii lub zostawiamy null
-                            String issueDate = symfoniaInvoiceService.getInvoiceIssueDate(data.getInvoiceNumber());
-                            if (issueDate != null && !issueDate.isEmpty()) {
-                                try {
-                                    LocalDate issueDateParsed = LocalDate.parse(issueDate);
-                                    data.setInvoiceIssueDate(issueDateParsed.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-                                } catch (Exception e) {
-                                    data.setInvoiceIssueDate(issueDate);
-                                }
-                            }
+                int phoneCount = interactionService.countPhoneCallsForInvoice(record.getNumerFaktury());
+                int commentCount = interactionService.countCommentsForInvoice(record.getNumerFaktury());
+                data.setPhoneCalls(phoneCount);
+                commentCounts.put(record.getNumerFaktury(), commentCount);
 
-                            // Data płatności
-                            if (data.getPaymentDate() != null && !data.getPaymentDate().isEmpty()) {
-                                try {
-                                    LocalDate paymentDateParsed = LocalDate.parse(data.getPaymentDate());
-                                    data.setPaymentDate(paymentDateParsed.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-                                } catch (Exception e) {
-                                }
-                            }
+                int emailSentCount = interactionService.sumEmailSentCount(record.getNumerFaktury());
+                data.setEmailSentCount(emailSentCount);
 
-                            // UWAGA: Usunąłem filtr odrzucający faktury z brakami!
-                            // Dzięki temu wyświetlą się wszystkie, nawet jeśli brakuje np. paymentDate.
-
-                            // Filtrowanie dat płatności
-                            if (fromDate != null || toDate != null) {
-                                if (data.getPaymentDate() != null && !data.getPaymentDate().isEmpty()) {
-                                    LocalDate paymentDate = LocalDate.parse(data.getPaymentDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                                    if ((fromDate == null || !paymentDate.isBefore(fromDate)) &&
-                                            (toDate == null || !paymentDate.isAfter(toDate))) {
-                                        invoices.add(data);
-                                    }
-                                } else {
-                                    invoices.add(data); // Dodaj również jeśli brakuje daty
-                                }
-                            } else {
-                                invoices.add(data);
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    System.err.println("Błąd parsowania pliku " + file.getName() + ": " + e.getMessage());
+                if (record.getDataWystawienia() != null) {
+                    data.setInvoiceIssueDate(record.getDataWystawienia().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
                 }
+
+                if (record.getTerminPlatnosci() != null) {
+                    data.setPaymentDate(record.getTerminPlatnosci().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+                }
+
+                if (fromDate != null || toDate != null) {
+                    if (data.getPaymentDate() != null && !data.getPaymentDate().isEmpty()) {
+                        LocalDate paymentDateParsed = LocalDate.parse(data.getPaymentDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                        if ((fromDate == null || !paymentDateParsed.isBefore(fromDate)) &&
+                                (toDate == null || !paymentDateParsed.isAfter(toDate))) {
+                            invoices.add(data);
+                        }
+                    } else {
+                        invoices.add(data);
+                    }
+                } else {
+                    invoices.add(data);
+                }
+
+            } catch (Exception e) {
+                System.err.println("Błąd przetwarzania faktury: " + record.getNumerFaktury() + ": " + e.getMessage());
             }
         }
 
-        // Aktualizacja
         LocalDateTime aktualizacja = LocalDateTime.now();
         DateTimeFormatter aktualizacjaFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy, HH:mm", new Locale("pl"));
-        String aktualizacjaFormatted = aktualizacja.format(aktualizacjaFormatter);
-        model.addAttribute("aktualizacja", aktualizacjaFormatted);
+        model.addAttribute("aktualizacja", aktualizacja.format(aktualizacjaFormatter));
 
-        // Liczba pozycji
         model.addAttribute("invoiceCount", invoices.size());
         model.addAttribute("commentCounts", commentCounts);
 
-        // Suma do zapłaty
         BigDecimal totalToPay = invoices.stream()
                 .map(InvoiceData::getAmountDue)
                 .filter(Objects::nonNull)
@@ -145,10 +117,8 @@ public class DashBoardController {
         formatter.setGroupingUsed(true);
         formatter.setMinimumFractionDigits(2);
         formatter.setMaximumFractionDigits(2);
+        model.addAttribute("totalToPay", formatter.format(totalToPay) + " zł");
 
-        String totalToPayFormatted = formatter.format(totalToPay) + " zł";
-
-        // Licznik błędów
         int errorCount = (int) invoices.stream()
                 .filter(dto -> dto.getInvoiceNumber() == null || dto.getInvoiceNumber().isEmpty()
                         || dto.getContractor() == null || dto.getContractor().isEmpty()
@@ -158,15 +128,51 @@ public class DashBoardController {
                         || dto.getAmountDue() == null)
                 .count();
 
-        model.addAttribute("invoices", invoices);
-        model.addAttribute("totalToPay", totalToPayFormatted);
         model.addAttribute("errorCount", errorCount);
+        model.addAttribute("invoices", invoices);
         model.addAttribute("from", from);
         model.addAttribute("to", to);
 
         addCommonAttributes(model, authentication);
         return "dashboard";
     }
+
+    @PostMapping("/dashboard/sendNotifications")
+    @ResponseBody
+    public Map<String, Object> sendNotifications(@RequestParam("invoiceNumbers") List<String> invoiceNumbers) {
+        int successCount = 0;
+        int noEmailCount = 0;
+        List<String> contractorsWithoutEmail = new ArrayList<>();
+
+        for (String invoiceNumber : invoiceNumbers) {
+            String email = symfoniaInvoiceService.getContractorEmail(invoiceNumber);
+            BigDecimal amountDue = symfoniaInvoiceService.getRemainingAmountForInvoice(invoiceNumber);
+            String contractorName = symfoniaInvoiceService.getContractorName(invoiceNumber);
+            String dueDate = symfoniaInvoiceService.getDueDate(invoiceNumber);
+
+            if (email != null && !email.isEmpty() && amountDue != null && dueDate != null && !dueDate.isEmpty()) {
+                try {
+                    notificationService.sendOverdueInvoiceEmail(email, invoiceNumber, amountDue, dueDate);
+                    interactionService.incrementEmailSentCount(invoiceNumber);
+                    successCount++;
+                } catch (Exception e) {
+                    contractorsWithoutEmail.add(contractorName + " (błąd wysyłki)");
+                    noEmailCount++;
+                }
+            } else {
+                contractorsWithoutEmail.add(contractorName + " (brak emaila lub danych)");
+                noEmailCount++;
+            }
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("successCount", successCount);
+        response.put("totalCount", invoiceNumbers.size());
+        response.put("noEmailCount", noEmailCount);
+        response.put("missingEmails", contractorsWithoutEmail);
+        return response;
+    }
+
 
     private void addCommonAttributes(Model model, Authentication authentication) {
         try {
@@ -175,5 +181,11 @@ public class DashBoardController {
         } catch (Exception e) {
             model.addAttribute("fullName", "Gość");
         }
+    }
+
+    @GetMapping("/dashboard/emailSentCount")
+    @ResponseBody
+    public int getEmailSentCount(@RequestParam("invoiceNumber") String invoiceNumber) {
+        return interactionService.sumEmailSentCount(invoiceNumber);
     }
 }

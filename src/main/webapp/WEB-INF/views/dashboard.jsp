@@ -55,7 +55,7 @@
         </div>
 
         <div class="action-buttons">
-            <button class="btn-action" onclick="sendNotifications()">Wyślij powiadomienia</button>
+            <button class="btn-action" onclick="sendNotifications()" id="sendNotificationsBtn">Wyślij powiadomienia</button>
         </div>
 
         <table class="invoice-table">
@@ -81,26 +81,55 @@
             <tbody>
             <c:forEach var="invoice" items="${invoices}">
                 <tr data-invoice-number="${invoice.invoiceNumber}">
-                    <td><input type="checkbox" class="row-check" data-filename="${invoice.filename}"></td>
+                    <td>
+                        <input type="checkbox"
+                               class="row-check"
+                               data-invoice-number="${invoice.invoiceNumber}">
+                    </td>
+
                     <td class="${empty invoice.contractor ? 'error-cell' : ''}">
                             ${invoice.contractor}
                     </td>
+
                     <td class="${empty invoice.invoiceNumber ? 'error-cell' : ''}">
                             ${invoice.invoiceNumber}
                     </td>
+
                     <td class="${empty invoice.formattedInvoiceIssueDate ? 'error-cell' : ''}">
                             ${invoice.formattedInvoiceIssueDate}
                     </td>
+
                     <td class="${empty invoice.formattedPaymentDate ? 'error-cell' : ''}">
                             ${invoice.formattedPaymentDate}
                     </td>
-                    <td>${invoice.formattedGrossAmount}</td>
-                    <td>${invoice.formattedAmountDue}</td>
-                    <td><span class="comment-count">${commentCounts[invoice.invoiceNumber] != null ? commentCounts[invoice.invoiceNumber] : 0}</span></td>
-                    <td>0</td>
-                    <td><span class="phone-count">${invoice.phoneCalls}</span></td>
+
                     <td>
-                        <a class="btn-details" onclick="openInvoiceModal('${invoice.invoiceNumber}')">Wyświetl</a>
+                            ${invoice.formattedGrossAmount}
+                    </td>
+
+                    <td>
+                            ${invoice.formattedAmountDue}
+                    </td>
+
+                    <td>
+            <span class="comment-count">
+                    ${commentCounts[invoice.invoiceNumber] != null ? commentCounts[invoice.invoiceNumber] : 0}
+            </span>
+                    </td>
+
+                    <td>
+                            ${invoice.emailSentCount != null ? invoice.emailSentCount : 0}
+                    </td>
+
+                    <td>
+            <span class="phone-count">
+                            <c:out value="${invoice.phoneCalls}" default="0"/>
+            </span>
+                    </td>
+
+                    <td>
+                        <a class="btn-details"
+                           onclick="openInvoiceModal('${invoice.invoiceNumber}')">Wyświetl</a>
                     </td>
                 </tr>
             </c:forEach>
@@ -131,6 +160,15 @@
                 <ul id="callHistory" class="history-list"></ul>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- modal email -->
+<div class="email-notification-modal-overlay" id="emailNotificationModal" style="display: none;">
+    <div class="email-notification-modal-window">
+        <button class="email-notification-modal-close" onclick="closeEmailNotificationModal()">&times;</button>
+        <h2>Wysyłka powiadomień e-mail</h2>
+        <div id="emailNotificationMessage"></div>
     </div>
 </div>
 

@@ -5,30 +5,34 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "TR", schema = "HM")
+@Table(name = "pn", schema = "hm")
 public class TransactionRecord {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
     @Column(name = "kod")
-    private String numerFaktury;  // Numer faktury w kolumnie 'kod'
+    private String numerFaktury;
 
-    @Column(name = "wartosc_rozl")
-    private BigDecimal wartoscRozl;
+    @Column(name = "data")
+    private LocalDate dataWystawienia;
+
+    @Column(name = "termin")
+    private LocalDate terminPlatnosci;
+
+    @Column(name = "khid")
+    private Integer kontrahentId;
 
     @Column(name = "kwota")
     private BigDecimal kwota;
 
-    @Column(name = "dataplat")
-    private LocalDate dataplat;
+    @Column(name = "ok")
+    private Integer rozliczona;  // 1 = rozliczona, 0 = nie rozliczona
 
-    @Column(name = "datarozl")
-    private LocalDate datarozl;
-
-    @Column(name = "data")
-    private LocalDate data;
+    @Column(name = "kwotarozl")
+    private BigDecimal kwotaRozliczona;
 
 
     public Long getId() { return id; }
@@ -37,28 +41,21 @@ public class TransactionRecord {
     public String getNumerFaktury() { return numerFaktury; }
     public void setNumerFaktury(String numerFaktury) { this.numerFaktury = numerFaktury; }
 
-    public BigDecimal getWartoscRozl() {
-        return wartoscRozl != null ? wartoscRozl : BigDecimal.ZERO;
-    }
+    public LocalDate getDataWystawienia() { return dataWystawienia; }
+    public void setDataWystawienia(LocalDate dataWystawienia) { this.dataWystawienia = dataWystawienia; }
 
-    public void setWartoscRozl(BigDecimal wartoscRozl) {
-        this.wartoscRozl = wartoscRozl;
-    }
+    public LocalDate getTerminPlatnosci() { return terminPlatnosci; }
+    public void setTerminPlatnosci(LocalDate terminPlatnosci) { this.terminPlatnosci = terminPlatnosci; }
 
-    public BigDecimal getKwota() { return kwota; }
+    public Integer getKontrahentId() { return kontrahentId; }
+    public void setKontrahentId(Integer kontrahentId) { this.kontrahentId = kontrahentId; }
+
+    public BigDecimal getKwota() { return kwota != null ? kwota : BigDecimal.ZERO; }
     public void setKwota(BigDecimal kwota) { this.kwota = kwota; }
 
-    public LocalDate getDataplat() { return dataplat; }
-    public void setDataplat(LocalDate dataplat) { this.dataplat = dataplat; }
+    public Integer getRozliczona() { return rozliczona; }
+    public void setRozliczona(Integer rozliczona) { this.rozliczona = rozliczona; }
 
-    public LocalDate getDatarozl() { return datarozl; }
-    public void setDatarozl(LocalDate datarozl) { this.datarozl = datarozl; }
-
-    public LocalDate getData() {
-        return data;
-    }
-
-    public void setData(LocalDate data) {
-        this.data = data;
-    }
+    public BigDecimal getKwotaRozliczona() { return kwotaRozliczona != null ? kwotaRozliczona : BigDecimal.ZERO; }
+    public void setKwotaRozliczona(BigDecimal kwotaRozliczona) { this.kwotaRozliczona = kwotaRozliczona; }
 }

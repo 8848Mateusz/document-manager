@@ -20,6 +20,9 @@ public class InvoiceInteraction {
     @Column(name = "created_by")
     private String createdBy;
 
+    @Column(name = "email_sent_count")
+    private Integer emailSentCount;
+
     private LocalDateTime timestamp;
 
     public InvoiceInteraction() {
@@ -46,5 +49,13 @@ public class InvoiceInteraction {
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public Integer getEmailSentCount() {
+        return emailSentCount;
+    }
+
+    public void setEmailSentCount(Integer emailSentCount) {
+        this.emailSentCount = emailSentCount;
     }
 }

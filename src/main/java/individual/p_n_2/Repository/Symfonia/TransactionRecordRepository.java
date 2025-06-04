@@ -2,9 +2,11 @@ package individual.p_n_2.Repository.Symfonia;
 
 import individual.p_n_2.Domain.Symfonia.TransactionRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,12 +17,15 @@ public interface TransactionRecordRepository extends JpaRepository<TransactionRe
 
     Optional<TransactionRecord> findFirstByNumerFakturyOrderByIdDesc(String numerFaktury);
 
-    boolean existsByNumerFakturyAndDatarozlIsNull(String numerFaktury);
+    @Query("SELECT tr FROM TransactionRecord tr WHERE tr.numerFaktury = :numerFaktury AND tr.rozliczona = 0 AND tr.terminPlatnosci < CURRENT_DATE")
+    List<TransactionRecord> findUnpaidAndOverdueByNumerFaktury(@Param("numerFaktury") String numerFaktury);
 
-    List<TransactionRecord> findByDatarozlIsNullAndDataplatBefore(LocalDate date);
+    @Query("SELECT t.terminPlatnosci FROM TransactionRecord t WHERE t.numerFaktury = :invoiceNumber ORDER BY t.id DESC")
+    Optional<LocalDate> findDueDateForInvoice(@Param("invoiceNumber") String invoiceNumber);
+
+    @Query("SELECT tr FROM TransactionRecord tr WHERE tr.rozliczona = 0 AND tr.terminPlatnosci < CURRENT_DATE")
+    List<TransactionRecord> findOverdueUnpaidInvoices();
 
     List<TransactionRecord> findAllByNumerFakturyIn(List<String> numerFakturyList);
 
-    @Query("SELECT tr FROM TransactionRecord tr WHERE tr.numerFaktury = :numerFaktury AND tr.datarozl IS NULL AND tr.dataplat < CURRENT_DATE")
-    List<TransactionRecord> findUnpaidAndOverdueByNumerFaktury(@Param("numerFaktury") String numerFaktury);
 }

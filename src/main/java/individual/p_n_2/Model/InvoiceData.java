@@ -13,26 +13,46 @@ public class InvoiceData {
     private BigDecimal grossAmount;
     private BigDecimal amountDue;
     private boolean settled;
-    private String filename;
     private int phoneCalls;
     private String invoiceIssueDate;
+    private String email;
+    private int emailSentCount;
+    private String formattedPaymentDate;
 
-    // FORMATY DATY
+    public String getFormattedPaymentDate() {
+        if (formattedPaymentDate != null && !formattedPaymentDate.isEmpty()) {
+            return formattedPaymentDate;
+        }
+        try {
+            LocalDate date = LocalDate.parse(this.paymentDate);
+            return date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        } catch (Exception e) {
+            return this.paymentDate;
+        }
+    }
+
+    public void setFormattedPaymentDate(String formattedPaymentDate) {
+        this.formattedPaymentDate = formattedPaymentDate;
+    }
+
+    public LocalDate getPaymentDateAsLocalDate() {
+        if (this.paymentDate == null || this.paymentDate.isEmpty()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(this.paymentDate, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        } catch (Exception e) {
+            System.err.println("Błąd parsowania paymentDate w InvoiceData: " + paymentDate);
+            return null;
+        }
+    }
+
     public String getFormattedInvoiceIssueDate() {
         try {
             LocalDate date = LocalDate.parse(this.invoiceIssueDate);
             return date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         } catch (Exception e) {
             return this.invoiceIssueDate;
-        }
-    }
-
-    public String getFormattedPaymentDate() {
-        try {
-            LocalDate date = LocalDate.parse(this.paymentDate);
-            return date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-        } catch (Exception e) {
-            return this.paymentDate;
         }
     }
 
@@ -52,7 +72,6 @@ public class InvoiceData {
         return formatter.format(amountDue) + " zł";
     }
 
-    // Metody do sprawdzania braków danych
     public boolean hasMissingInvoiceNumber() {
         return invoiceNumber == null || invoiceNumber.isEmpty();
     }
@@ -76,7 +95,6 @@ public class InvoiceData {
                 hasMissingAmountDue();
     }
 
-
     public String getInvoiceNumber() { return invoiceNumber; }
     public void setInvoiceNumber(String invoiceNumber) { this.invoiceNumber = invoiceNumber; }
 
@@ -95,12 +113,15 @@ public class InvoiceData {
     public boolean isSettled() { return settled; }
     public void setSettled(boolean settled) { this.settled = settled; }
 
-    public String getFilename() { return filename; }
-    public void setFilename(String filename) { this.filename = filename; }
-
     public int getPhoneCalls() { return phoneCalls; }
     public void setPhoneCalls(int phoneCalls) { this.phoneCalls = phoneCalls; }
 
     public String getInvoiceIssueDate() { return invoiceIssueDate; }
     public void setInvoiceIssueDate(String invoiceIssueDate) { this.invoiceIssueDate = invoiceIssueDate; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public int getEmailSentCount() { return emailSentCount; }
+    public void setEmailSentCount(int emailSentCount) { this.emailSentCount = emailSentCount; }
 }

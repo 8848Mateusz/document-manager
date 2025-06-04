@@ -3,19 +3,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const checkboxes = document.querySelectorAll(".row-check");
     const loader = document.getElementById("loadingModal");
 
-    // Checkboxy
-    const selected = JSON.parse(localStorage.getItem("selectedInvoices")) || [];
-    checkboxes.forEach(cb => {
-        const filename = cb.dataset.filename;
-        if (selected.includes(filename)) cb.checked = true;
+    // Zresetuj Local Storage (usunie wcześniejsze zaznaczenia)
+    localStorage.removeItem("selectedInvoices");
 
+    // Checkboxy - teraz puste przy starcie
+    checkboxes.forEach(cb => {
         cb.addEventListener("change", () => {
             const updated = Array.from(checkboxes)
                 .filter(c => c.checked)
                 .map(c => c.dataset.filename);
             localStorage.setItem("selectedInvoices", JSON.stringify(updated));
-        });
+
     });
+});
 
     if (selectAll) {
         selectAll.addEventListener("change", () => {
@@ -73,6 +73,7 @@ function closeInvoiceModal() {
     document.body.style.overflow = '';
     const invoiceNumber = document.getElementById('modalInvoiceNumber').textContent.trim();
     refreshCountsInTable(invoiceNumber);
+    refreshEmailSentCount(invoiceNumber);
 }
 
 // AJAX dodanie komentarza
@@ -252,3 +253,100 @@ document.querySelectorAll('.sort-icon').forEach(function(icon) {
         icon.classList.add(order === 'asc' ? 'fa-sort-up' : 'fa-sort-down');
     });
 });
+
+function sendNotifications() {
+    const selectedInvoices = Array.from(document.querySelectorAll('.row-check:checked'))
+        .map(cb => cb.closest('tr').getAttribute('data-invoice-number'));
+
+    if (selectedInvoices.length === 0) {
+        alert("Nie wybrano żadnych faktur do wysłania powiadomień.");
+        return;
+    }
+
+    fetch('/dashboard/sendNotifications', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'invoiceNumbers=' + selectedInvoices.join('&invoiceNumbers=')
+    })
+        .then(response => response.json())
+        .then(data => {
+            const modal = document.getElementById('emailNotificationModal');
+            const messageContainer = document.getElementById('emailNotificationMessage');
+
+            let message = `<strong>Wysłano:</strong> ${data.successCount}/${data.totalCount}, 
+                   <strong>brak e-maili:</strong> 
+                   <span id="missingEmailCount" 
+                         style="cursor:pointer; text-decoration:underline; color:blue;">
+                         ${data.noEmailCount}
+                   </span>`;
+
+            if (data.noEmailCount > 0) {
+                message += `
+            <div id="missingEmailList" style="display:none; margin-top:10px; text-align:left;">
+                <ul>`;
+                data.missingEmails.forEach(contractor => {
+                    message += `<li>${contractor}</li>`;
+                });
+                message += `</ul></div>`;
+            }
+
+            messageContainer.innerHTML = message;
+            modal.style.display = 'flex';
+
+            // Obsługa kliknięcia
+            const missingEmailCount = document.getElementById('missingEmailCount');
+            if (missingEmailCount) {
+                missingEmailCount.addEventListener('click', () => {
+                    const missingEmailList = document.getElementById('missingEmailList');
+                    if (missingEmailList) {
+                        // Toggle widoczności
+                        missingEmailList.style.display =
+                            missingEmailList.style.display === 'none' ? 'block' : 'none';
+                    }
+                });
+            }
+        })
+        .catch(error => console.error('Błąd:', error));
+}
+
+function openEmailNotificationModal(sentCount, totalCount, missingEmailCount) {
+    const modal = document.getElementById('emailNotificationModal');
+    const messageElement = document.getElementById('emailNotificationMessage');
+    messageElement.innerText = `Wysłano: ${sentCount}/${totalCount}, brak e-maili: ${missingEmailCount}`;
+    modal.style.display = 'flex';
+}
+
+function closeEmailNotificationModal() {
+    const modal = document.getElementById('emailNotificationModal');
+    modal.style.display = 'none';
+
+    const selectedInvoices = Array.from(document.querySelectorAll('.row-check:checked'))
+        .map(cb => cb.closest('tr').getAttribute('data-invoice-number'));
+
+    selectedInvoices.forEach(invoiceNumber => {
+        refreshEmailSentCount(invoiceNumber);
+    });
+}
+
+function refreshEmailSentCount(invoiceNumber) {
+    fetch(`/dashboard/emailSentCount?invoiceNumber=${encodeURIComponent(invoiceNumber)}`)
+        .then(response => response.json())
+        .then(count => {
+            // Aktualizujemy licznik w tabeli (td)
+            const row = document.querySelector(`tr[data-invoice-number="${invoiceNumber}"]`);
+            if (row) {
+                const emailSentCell = row.querySelector("td:nth-child(9)"); // Kolumna email_sent_count
+                if (emailSentCell) {
+                    emailSentCell.textContent = count;
+                }
+            }
+        })
+        .catch(error => {
+            console.error("Błąd odświeżania licznika email:", error);
+        });
+}
+
+
+
