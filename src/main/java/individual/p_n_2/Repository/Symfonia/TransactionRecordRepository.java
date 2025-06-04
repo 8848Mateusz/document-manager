@@ -28,4 +28,16 @@ public interface TransactionRecordRepository extends JpaRepository<TransactionRe
 
     List<TransactionRecord> findAllByNumerFakturyIn(List<String> numerFakturyList);
 
+    @Query("SELECT tr FROM TransactionRecord tr " +
+            "WHERE tr.rozliczona = 0 " +
+            "AND tr.terminPlatnosci < CURRENT_DATE " +
+            "AND tr.dataWystawienia >= :startDate " +
+            "AND tr.numerFaktury LIKE %:pattern%")
+    List<TransactionRecord> findFilteredFromDateAndFVS(@Param("startDate") LocalDate startDate,
+                                                       @Param("pattern") String pattern);
+
+    default List<TransactionRecord> findFilteredFromDateAndFVS(LocalDate startDate) {
+        return findFilteredFromDateAndFVS(startDate, "FVS");
+    }
+
 }

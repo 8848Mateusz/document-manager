@@ -62,7 +62,12 @@
             <thead>
             <tr>
                 <th><input type="checkbox" id="select-all"></th>
-                <th>Kontrahent</th>
+                <th>
+                    Kontrahent
+                    <a href="/dashboard/load?sortOrder=asc" id="sortByContractorBtn"  class="sort-icon" title="Sortuj alfabetycznie">
+                        <i class="fa fa-sort-alpha-down"></i>
+                    </a>
+                </th>
                 <th>Numer faktury</th>
                 <th>Data wystawienia
                     <i class="sort-icon fa fa-sort" data-column-index="3" data-sort-order="asc"></i>
@@ -169,6 +174,17 @@
         <button class="email-notification-modal-close" onclick="closeEmailNotificationModal()">&times;</button>
         <h2>Wysyłka powiadomień e-mail</h2>
         <div id="emailNotificationMessage"></div>
+    </div>
+</div>
+
+<!-- Modal sortowania -->
+<div id="sortLoaderModal" style="display:none; position: fixed; top: 0; left: 0;
+width: 100%; height: 100%; background: rgba(0,0,0,0.6);
+z-index: 9999; color: white; font-size: 18px; text-align: center;
+padding-top: 20%;">
+<div>
+    <div class="loader"></div>
+        <p>Trwa sortowanie kontrahentów alfabetycznie...</p>
     </div>
 </div>
 

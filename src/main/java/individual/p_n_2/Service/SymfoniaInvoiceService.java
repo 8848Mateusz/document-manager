@@ -6,13 +6,15 @@ import individual.p_n_2.Repository.Symfonia.FKKontrahenciRepository;
 import individual.p_n_2.Repository.Symfonia.TransactionRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.ArrayList;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SymfoniaInvoiceService {
@@ -130,5 +132,23 @@ public class SymfoniaInvoiceService {
             return dueDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         }
         return "";
+    }
+
+    public List<TransactionRecord> getOverdueUnpaidInvoices(LocalDate fromDate, LocalDate toDate) {
+        List<TransactionRecord> records = transactionRecordRepository.findOverdueUnpaidInvoices();
+
+        // Filtr FVS i od 2021
+        return records.stream()
+                .filter(r -> r.getNumerFaktury() != null && r.getNumerFaktury().contains("FVS"))
+                .filter(r -> r.getDataWystawienia() != null && r.getDataWystawienia().getYear() >= 2021)
+                .collect(Collectors.toList());
+    }
+
+    public List<TransactionRecord> getFilteredInvoicesFrom2021AndFVS() {
+        List<TransactionRecord> records = transactionRecordRepository.findOverdueUnpaidInvoices();
+        return records.stream()
+                .filter(r -> r.getNumerFaktury() != null && r.getNumerFaktury().contains("FVS"))
+                .filter(r -> r.getDataWystawienia() == null || !r.getDataWystawienia().isBefore(LocalDate.of(2021, 1, 1)))
+                .collect(Collectors.toCollection(ArrayList::new));  // mutowalna lista
     }
 }

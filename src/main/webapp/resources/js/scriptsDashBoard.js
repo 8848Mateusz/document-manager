@@ -348,5 +348,45 @@ function refreshEmailSentCount(invoiceNumber) {
         });
 }
 
+let contractorSortOrder = 'asc';
+
+function toggleSortOrder() {
+    contractorSortOrder = contractorSortOrder === 'asc' ? 'desc' : 'asc';
+    refreshDashboard();
+}
+
+function refreshDashboard() {
+    const loader = document.getElementById("loadingModal");
+    loader.style.display = "block";
+
+    const url = `/dashboard/load?sortOrder=${contractorSortOrder}`;
+    window.location.href = url;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const sortButton = document.getElementById("sortByContractorBtn");  // <-- ustaw ID przycisku
+    const sortLoaderModal = document.getElementById("sortLoaderModal");
+
+    if (sortButton && sortLoaderModal) {
+        sortButton.addEventListener("click", function() {
+            sortLoaderModal.style.display = "block";
+        });
+    }
+});
+
+function showSortLoadingModal() {
+    const modal = document.getElementById("sortLoadingModal");
+    if (modal) {
+        modal.style.display = "block";
+    }
+}
+
+function closeSortLoadingModal() {
+    const modal = document.getElementById("sortLoadingModal");
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
+
 
 

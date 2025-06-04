@@ -42,14 +42,28 @@ public class DashBoardController {
     @GetMapping("/dashboard/load")
     public String loadDashboardData(@RequestParam(required = false) String from,
                                     @RequestParam(required = false) String to,
+                                    @RequestParam(required = false, defaultValue = "none") String sortOrder,
                                     Model model,
                                     Authentication authentication) {
 
+        // konwersja dat
         DateTimeFormatter htmlFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate fromDate = (from != null && !from.isEmpty()) ? LocalDate.parse(from, htmlFormatter) : null;
         LocalDate toDate = (to != null && !to.isEmpty()) ? LocalDate.parse(to, htmlFormatter) : null;
 
-        List<TransactionRecord> records = symfoniaInvoiceService.getOverdueUnpaidInvoices();
+       // pobierz fakturę
+        List<TransactionRecord> records = symfoniaInvoiceService.getFilteredInvoicesFrom2021AndFVS();
+
+        // Sortujemy TYLKO jeśli sortOrder=asc
+        if ("asc".equalsIgnoreCase(sortOrder)) {
+            records.sort(Comparator
+                    .comparing((TransactionRecord tr) -> {
+                        String contractorName = symfoniaInvoiceService.getContractorName(tr.getNumerFaktury());
+                        return contractorName != null ? contractorName : "";
+                    }, String.CASE_INSENSITIVE_ORDER)
+                    .thenComparing(TransactionRecord::getNumerFaktury, String.CASE_INSENSITIVE_ORDER));
+        }
+
         List<InvoiceData> invoices = new ArrayList<>();
         Map<String, Integer> commentCounts = new HashMap<>();
 
@@ -81,11 +95,12 @@ public class DashBoardController {
                     data.setPaymentDate(record.getTerminPlatnosci().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
                 }
 
+                // Filtr daty płatności
                 if (fromDate != null || toDate != null) {
                     if (data.getPaymentDate() != null && !data.getPaymentDate().isEmpty()) {
-                        LocalDate paymentDateParsed = LocalDate.parse(data.getPaymentDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-                        if ((fromDate == null || !paymentDateParsed.isBefore(fromDate)) &&
-                                (toDate == null || !paymentDateParsed.isAfter(toDate))) {
+                        LocalDate issueDateParsed = LocalDate.parse(data.getInvoiceIssueDate(), DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                        if ((fromDate == null || !issueDateParsed.isBefore(fromDate)) &&
+                                (toDate == null || !issueDateParsed.isAfter(toDate))) {
                             invoices.add(data);
                         }
                     } else {
@@ -132,6 +147,7 @@ public class DashBoardController {
         model.addAttribute("invoices", invoices);
         model.addAttribute("from", from);
         model.addAttribute("to", to);
+        model.addAttribute("sortOrder", sortOrder);
 
         addCommonAttributes(model, authentication);
         return "dashboard";
