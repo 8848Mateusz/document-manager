@@ -155,10 +155,15 @@ public class DashBoardController {
 
     @PostMapping("/dashboard/sendNotifications")
     @ResponseBody
-    public Map<String, Object> sendNotifications(@RequestParam("invoiceNumbers") List<String> invoiceNumbers) {
+    public Map<String, Object> sendNotifications(@RequestParam("invoiceNumbers") List<String> invoiceNumbers,
+                                                 Authentication authentication) {
         int successCount = 0;
         int noEmailCount = 0;
         List<String> contractorsWithoutEmail = new ArrayList<>();
+        String createdBy = authentication.getName();
+
+        // Grupa faktur wg e-maila kontrahenta
+        Map<String, List<InvoiceData>> invoicesByEmail = new HashMap<>();
 
         for (String invoiceNumber : invoiceNumbers) {
             String email = symfoniaInvoiceService.getContractorEmail(invoiceNumber);
@@ -167,17 +172,36 @@ public class DashBoardController {
             String dueDate = symfoniaInvoiceService.getDueDate(invoiceNumber);
 
             if (email != null && !email.isEmpty() && amountDue != null && dueDate != null && !dueDate.isEmpty()) {
-                try {
-                    notificationService.sendOverdueInvoiceEmail(email, invoiceNumber, amountDue, dueDate);
-                    interactionService.incrementEmailSentCount(invoiceNumber);
-                    successCount++;
-                } catch (Exception e) {
-                    contractorsWithoutEmail.add(contractorName + " (błąd wysyłki)");
-                    noEmailCount++;
-                }
+                InvoiceData invoiceData = new InvoiceData();
+                invoiceData.setInvoiceNumber(invoiceNumber);
+                invoiceData.setAmountDue(amountDue);
+                invoiceData.setPaymentDate(dueDate);
+
+                invoicesByEmail.computeIfAbsent(email, k -> new ArrayList<>()).add(invoiceData);
+
             } else {
                 contractorsWithoutEmail.add(contractorName + " (brak emaila lub danych)");
                 noEmailCount++;
+            }
+        }
+
+        // Wysyłamy JEDEN e-mail na klienta
+        for (Map.Entry<String, List<InvoiceData>> entry : invoicesByEmail.entrySet()) {
+            String email = entry.getKey();
+            List<InvoiceData> invoices = entry.getValue();
+
+            try {
+                notificationService.sendOverdueInvoiceEmail(email, invoices);
+                successCount += invoices.size();
+
+                // Zapisujemy interakcję dla KAŻDEJ faktury osobno
+                for (InvoiceData invoice : invoices) {
+                    interactionService.saveEmailInteraction(invoice.getInvoiceNumber(), createdBy);
+                }
+
+            } catch (Exception e) {
+                contractorsWithoutEmail.add(email + " (błąd wysyłki)");
+                noEmailCount += invoices.size();
             }
         }
 
@@ -201,7 +225,26 @@ public class DashBoardController {
 
     @GetMapping("/dashboard/emailSentCount")
     @ResponseBody
-    public int getEmailSentCount(@RequestParam("invoiceNumber") String invoiceNumber) {
+    public int getEmailSentCount(@RequestParam String invoiceNumber) {
         return interactionService.sumEmailSentCount(invoiceNumber);
     }
+
+    @GetMapping("/dashboard/emailHistory")
+    @ResponseBody
+    public List<Map<String, Object>> getEmailHistory(@RequestParam String invoiceNumber) {
+        List<individual.p_n_2.Domain.User.InvoiceInteraction> interactions =
+                interactionService.getEmailHistoryForInvoice(invoiceNumber);
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        for (individual.p_n_2.Domain.User.InvoiceInteraction interaction : interactions) {
+            Map<String, Object> row = new HashMap<>();
+            row.put("createdBy", interaction.getCreatedBy());
+            row.put("timestamp", interaction.getTimestamp());
+            result.add(row);
+        }
+
+        return result;
+    }
+
 }

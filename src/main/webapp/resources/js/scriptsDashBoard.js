@@ -117,10 +117,13 @@ function fetchNotes(invoiceNumber) {
         .then(data => {
             const history = document.getElementById('commentHistory');
             const calls = document.getElementById('callHistory');
+            const emails = document.getElementById('emailHistory');  // Dodaj selektor dla historii e-maili
             let callCount = 0;
 
+            // Wyczyść poprzednią zawartość
             history.innerHTML = '';
             calls.innerHTML = '';
+            emails.innerHTML = '';
 
             data.forEach(note => {
                 const li = document.createElement('li');
@@ -131,8 +134,12 @@ function fetchNotes(invoiceNumber) {
                     callCount++;
                     li.innerHTML = `📞 Telefon <small>(${note.timestamp}) — <b>${note.createdBy}</b></small>`;
                     calls.appendChild(li);
+                } else if (note.type === "email") {
+                    li.innerHTML = `📧 <small>(${note.timestamp}) — <b>${note.createdBy}</b></small>`;
+                    emails.appendChild(li);
                 }
             });
+
             document.getElementById('callCount').textContent = callCount;
         });
 }
@@ -143,7 +150,7 @@ function refreshDashboard() {
     icon.classList.add('spin');
     document.getElementById('loadingModal').style.display = 'block';
     setTimeout(() => {
-        window.location.href = "/dashboard/load";  // 🔄 uwzględnia /load
+        window.location.href = "/dashboard/load";  //
     }, 500);
 }
 
@@ -263,6 +270,8 @@ function sendNotifications() {
         return;
     }
 
+    showEmailSendingModal();  // Pokaż modal ładowania
+
     fetch('/dashboard/sendNotifications', {
         method: 'POST',
         headers: {
@@ -272,15 +281,17 @@ function sendNotifications() {
     })
         .then(response => response.json())
         .then(data => {
+            hideEmailSendingModal();  // Ukryj modal ładowania
+
             const modal = document.getElementById('emailNotificationModal');
             const messageContainer = document.getElementById('emailNotificationMessage');
 
             let message = `<strong>Wysłano:</strong> ${data.successCount}/${data.totalCount}, 
-                   <strong>brak e-maili:</strong> 
-                   <span id="missingEmailCount" 
-                         style="cursor:pointer; text-decoration:underline; color:blue;">
-                         ${data.noEmailCount}
-                   </span>`;
+                       <strong>brak e-maili:</strong> 
+                       <span id="missingEmailCount" 
+                             style="cursor:pointer; text-decoration:underline; color:blue;">
+                             ${data.noEmailCount}
+                       </span>`;
 
             if (data.noEmailCount > 0) {
                 message += `
@@ -301,14 +312,17 @@ function sendNotifications() {
                 missingEmailCount.addEventListener('click', () => {
                     const missingEmailList = document.getElementById('missingEmailList');
                     if (missingEmailList) {
-                        // Toggle widoczności
                         missingEmailList.style.display =
                             missingEmailList.style.display === 'none' ? 'block' : 'none';
                     }
                 });
             }
         })
-        .catch(error => console.error('Błąd:', error));
+        .catch(error => {
+            hideEmailSendingModal();  // Ukryj modal ładowania nawet w przypadku błędu
+            console.error('Błąd:', error);
+            alert('Wystąpił błąd podczas wysyłania e-maili.');
+        });
 }
 
 function openEmailNotificationModal(sentCount, totalCount, missingEmailCount) {
@@ -359,7 +373,7 @@ function refreshDashboard() {
     const loader = document.getElementById("loadingModal");
     loader.style.display = "block";
 
-    const url = `/dashboard/load?sortOrder=${contractorSortOrder}`;
+    const url = `/dashboard/load`;
     window.location.href = url;
 }
 
@@ -386,6 +400,49 @@ function closeSortLoadingModal() {
     if (modal) {
         modal.style.display = "none";
     }
+}
+
+document.querySelectorAll(".email-count").forEach(cell => {
+    cell.addEventListener("click", function() {
+        const invoiceNumber = this.closest("tr").getAttribute("data-invoice-number");
+        openEmailHistoryModal(invoiceNumber);
+    });
+});
+
+function showEmailSendingModal() {
+    document.getElementById('emailSendingModal').style.display = 'flex';
+}
+
+function hideEmailSendingModal() {
+    document.getElementById('emailSendingModal').style.display = 'none';
+}
+
+function fetchEmailHistory(invoiceNumber) {
+    return fetch(`/api/invoice-interaction/email-history?invoiceNumber=${encodeURIComponent(invoiceNumber)}`)
+        .then(res => res.json())
+        .then(data => {
+            const emailHistory = document.getElementById('emailHistory');
+            emailHistory.innerHTML = ''; // wyczyść listę
+
+            data.forEach(entry => {
+                const li = document.createElement('li');
+                li.innerHTML = `✉️ <small>(${entry.timestamp}) — <b>${entry.createdBy}</b></small>`;
+                emailHistory.appendChild(li);
+            });
+        });
+}
+
+function openInvoiceModal(invoiceNumber) {
+    if (!invoiceNumber) return;
+    document.getElementById("modalInvoiceNumber").textContent = invoiceNumber;
+    document.getElementById("newComment").value = '';
+    document.getElementById("invoiceModal").classList.add("show");
+    document.body.style.overflow = 'hidden';
+
+    fetchNotes(invoiceNumber).then(() => {
+        refreshCountsInTable(invoiceNumber);
+    });
+    fetchEmailHistory(invoiceNumber); // Nowe!
 }
 
 

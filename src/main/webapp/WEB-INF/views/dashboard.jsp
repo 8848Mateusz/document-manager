@@ -122,8 +122,8 @@
             </span>
                     </td>
 
-                    <td>
-                            ${invoice.emailSentCount != null ? invoice.emailSentCount : 0}
+                    <td class="email-count" style="cursor: pointer;">
+                            ${invoice.emailSentCount}
                     </td>
 
                     <td>
@@ -163,6 +163,8 @@
                 <ul id="commentHistory" class="history-list"></ul>
                 <h4>Historia kontaktów telefonicznych:</h4>
                 <ul id="callHistory" class="history-list"></ul>
+                <h4>Historia wysyłek e-maili:</h4>
+                <ul id="emailHistory" class="history-list"></ul>
             </div>
         </div>
     </div>
@@ -196,6 +198,15 @@ padding-top: 20%;">
     <div>
         <div class="loader"></div>
         <p>Proszę czekać, trwa wczytywanie danych...</p>
+    </div>
+</div>
+
+
+<div id="emailSendingModal" class="email-sending-modal" style="display: none;">
+    <div class="email-sending-modal-content">
+        <span class="email-sending-modal-close" onclick="hideEmailSendingModal()">&times;</span>
+        <div class="email-sending-loader"></div>
+        <p>Proszę czekać, trwa wysyłanie powiadomień e-mail...</p>
     </div>
 </div>
 
